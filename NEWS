@@ -4,6 +4,10 @@
 
 * Improvements and additions:
 
+  - avr-gcc v15 and up issues a diagnostic for __int24 and __uint24 when
+    -pedantic or similar options are on.  Hence __extension__ was
+    added when using these types in avr/pgmspace.h.
+
   - common/asmdef.h used a sub-optimal definition of XJMP and XCALL (#993).
     Outcome was a sub-optimal code generation for some devices like the
     ones in avrxmega3/short-calls.
@@ -16,6 +20,8 @@
     defined in a C++ namespace as an ISR.   It also allows to define ISR
     aliases without the penalty of an additional JMP/RJMP instruction.
     (Issue #765).
+
+  - Support ISO/IEC TR 18037 functions rdivi, urdivi, lrdivi, ulrdivi (#999).
 
 * Issues closed:
 

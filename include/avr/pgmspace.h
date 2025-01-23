@@ -462,8 +462,10 @@ _Avrlibc_Def_Pgm_2 (unsigned_long, unsigned long)
 #endif
 
 #if defined(__INT24_MAX__)
-_Avrlibc_Def_Pgm_3 (i24, __int24)
-_Avrlibc_Def_Pgm_3 (u24, __uint24)
+__extension__ typedef __int24 __i24_t;
+__extension__ typedef __uint24 __u24_t;
+_Avrlibc_Def_Pgm_3 (i24, __i24_t)
+_Avrlibc_Def_Pgm_3 (u24, __u24_t)
 #endif /* Have __int24 */
 
 _Avrlibc_Def_Pgm_4 (u32, uint32_t)
@@ -893,8 +895,8 @@ _Avrlibc_Def_Pgm_Far_2 (unsigned_long, unsigned long)
 #endif
 
 #if defined(__INT24_MAX__)
-_Avrlibc_Def_Pgm_Far_3 (i24, __int24)
-_Avrlibc_Def_Pgm_Far_3 (u24, __uint24)
+_Avrlibc_Def_Pgm_Far_3 (i24, __i24_t)
+_Avrlibc_Def_Pgm_Far_3 (u24, __u24_t)
 #endif /* Have __int24 */
 
 _Avrlibc_Def_Pgm_Far_4 (u32, uint32_t)
@@ -1257,7 +1259,9 @@ typedef uint64_t  prog_uint64_t __attribute__((__progmem__,__deprecated__("prog_
    that they decay to pgm_read() for devices without ELPM.
    Since GCC v7 PR71948, the compiler adds an offset of 0x4000 on
    Reduced Tiny when it takes the address of an object in PROGMEM,
-   which means we have to add 0x4000 here, too.  */
+   which means we have to add 0x4000 here, too.  Notice that
+   PROGMEM_FAR is just a section attribute without __progmem__, and
+   therefore the compiler doesn't add 0x4000.  */
 #define pgm_get_far_address(var)                      \
 (__extension__({                                      \
     uint_farptr_t __tmp;                              \
