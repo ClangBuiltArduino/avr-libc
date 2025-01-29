@@ -1244,7 +1244,7 @@ typedef uint64_t  prog_uint64_t __attribute__((__progmem__,__deprecated__("prog_
 (__extension__({                                      \
     uint_farptr_t __tmp;                              \
                                                       \
-    __asm__ __volatile__ (                            \
+    __asm__ (                                         \
         "ldi    %A0, lo8(%1)"           "\n\t"        \
         "ldi    %B0, hi8(%1)"           "\n\t"        \
         "ldi    %C0, hh8(%1)"           "\n\t"        \
@@ -1266,7 +1266,7 @@ typedef uint64_t  prog_uint64_t __attribute__((__progmem__,__deprecated__("prog_
 (__extension__({                                      \
     uint_farptr_t __tmp;                              \
                                                       \
-    __asm__ __volatile__ (                            \
+    __asm__ (                                         \
         "ldi    %A0, lo8(0x4000+(%1))"  "\n\t"        \
         "ldi    %B0, hi8(0x4000+(%1))"  "\n\t"        \
         "ldi    %C0, hh8(0x4000+(%1))"  "\n\t"        \
@@ -1332,7 +1332,7 @@ extern void *memcpy_P(void *, const void *, size_t);
 extern void *memmem_P(const void *, size_t, const void *, size_t) __ATTR_PURE__;
 
 /** \ingroup avr_pgmspace
-    \fn const void +memrchr_P(const void *src, int val, size_t len)
+    \fn const void *memrchr_P(const void *src, int val, size_t len)
 
     The memrchr_P() function is like the memchr_P() function, except
     that it searches backwards from the end of the \p len bytes pointed
