@@ -115,7 +115,9 @@
 #  define ISR(vector, [attributes])
 #else  /* real code */
 
-#if (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
+#if defined (__clang__)
+#  define __INTR_ATTRS __used__
+#elif (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
 #  define __INTR_ATTRS __used__, __externally_visible__
 #else /* GCC < 4.1 */
 #  define __INTR_ATTRS __used__
@@ -164,11 +166,7 @@
     Valid attributes are #ISR_BLOCK, #ISR_NOBLOCK, #ISR_NAKED,
     #ISR_FLATTEN, #ISR_NOICF and #ISR_NOGCCISR.
 
-    #ISR_N is only supported when the compiler supports the
-    <tt>signal(n)</tt> attribute, i.e. the \c signal attribute with arguments.
-    This is the case for
-    <a href="https://gcc.gnu.org/gcc-15/changes.html#avr">GCC v15</a>
-    and up.
+\since AVR-LibC v2.3, <a href="https://gcc.gnu.org/gcc-15/changes.html#avr">GCC v15</a>
 */
 #  define ISR_N(vector_num, [attributes])
 #else  /* real code */
@@ -325,11 +323,11 @@
 
     \code #include <avr/interrupt.h> \endcode
 
-    This is a vector which is aliased to __vector_default, the vector
+    This is a vector which is aliased to \c __vector_default, the vector
     executed when an IRQ fires with no accompanying ISR handler. This
     may be used along with the ISR() macro to create a catch-all for
-    undefined but used ISRs for debugging purposes.
-*/
+    undefined but used ISRs for debugging purposes.  It cannot be used
+    with #ISR_N since there is no associated interrupt number.  */
 #  define BADISR_vect
 #else  /* !DOXYGEN */
 #  define BADISR_vect __vector_default
