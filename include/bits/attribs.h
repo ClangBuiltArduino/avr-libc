@@ -19,8 +19,8 @@
 
 /* AVR specific */
 
-#if (__clang__)
-#define __ATTR_PROGMEM__  __attribute__((section(".progmem1.data")))
+#ifdef __clang__
+#define __ATTR_PROGMEM__ __attribute__((__section__(".progmem1.data")))
 #else
 #define __ATTR_PROGMEM__ __attribute__((__progmem__))
 #endif
