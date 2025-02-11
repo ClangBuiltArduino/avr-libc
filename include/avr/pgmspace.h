@@ -89,29 +89,11 @@
 #include <avr/io.h>
 
 #ifndef __DOXYGEN__
-#ifndef __ATTR_CONST__
-#define __ATTR_CONST__ __attribute__((__const__))
-#endif
 
-#ifndef __ATTR_PROGMEM__
-#if (__clang__)
-#define __ATTR_PROGMEM__  __attribute__((section(".progmem1.data")))
-#else
-#define __ATTR_PROGMEM__ __attribute__((__progmem__))
-#endif
-#endif
-
-#ifndef __ATTR_PURE__
-#define __ATTR_PURE__ __attribute__((__pure__))
-#endif
-
-#ifndef __ATTR_ALWAYS_INLINE__
-#define __ATTR_ALWAYS_INLINE__ __inline__ __attribute__((__always_inline__))
-#endif
+#include <bits/attribs.h>
+#include <avr/lpm-elpm.h>
 
 #define PROGMEM __ATTR_PROGMEM__
-
-#include <avr/lpm-elpm.h>
 
 #endif	/* !__DOXYGEN__ */
 
@@ -1224,7 +1206,9 @@ extern int strcmp_P(const char *, const char *) __ATTR_PURE__;
 
     \returns The strcpy_P() function returns a pointer to the destination
     string dest. */
-extern char *strcpy_P(char *, const char *);
+#ifdef __DOXYGEN__
+extern inline char *strcpy_P(char *, const char *);
+#endif
 
 /** \ingroup avr_pgmspace
     \fn int strcasecmp_P(const char *s1, const char *s2)
@@ -1730,23 +1714,21 @@ extern int memcmp_PF(const void *, uint_farptr_t, size_t) __ATTR_PURE__;
     pointer to a string in program space.
 
     \returns The strlen_P() function returns the number of characters in src.
-
-    \note strlen_P() is implemented as an inline function in the avr/pgmspace.h
-    header file, which will check if the length of the string is a constant
-    and known at compile time. If it is not known at compile time, the macro
-    will issue a call to __strlen_P() which will then calculate the length
-    of the string as normal.
 */
 static inline size_t strlen_P(const char * s);
 #else /* !DOXYGEN */
 
 #ifdef __AVR_TINY__
 /* PR71948: AVR_TINY may use open coded C/C++ to read from progmem.  */
+#include <string.h>
+
 #define strlen_P(x) strlen(x)
-extern size_t strlen (const char*);
+#define strcpy_P(x, y) strcpy(x, y)
+
 #else
 
-static __ATTR_ALWAYS_INLINE__ size_t strlen_P(const char *__s)
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+size_t strlen_P(const char *__s)
 {
   if (__builtin_constant_p (__builtin_strlen (__s)))
     {
@@ -1756,12 +1738,22 @@ static __ATTR_ALWAYS_INLINE__ size_t strlen_P(const char *__s)
     {
       register const char *__r24 __asm("24") = __s;
       register size_t __res __asm("24");
-      __asm ("%~call __strlen_P" : "=r" (__res) : "r" (__r24)
+      __asm ("%~call strlen_P" : "=r" (__res) : "r" (__r24)
              : "0", "30", "31");
       return __res;
     }
 }
-#endif
+
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+char* strcpy_P(char *__x, const char *__z)
+{
+  char *__ret = __x;
+  __asm volatile ("%~call __strcpy_P"
+                  : "+x" (__x), "+z" (__z) :: "0", "memory");
+  return __ret;
+}
+#endif /* AVR_TINY */
+
 #endif /* DOXYGEN */
 
 #ifdef __cplusplus

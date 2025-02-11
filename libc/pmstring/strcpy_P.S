@@ -39,23 +39,16 @@
 #define src_hi r23
 #define src_lo r22
 
-; 10 words, (17 + strlen_P(src) * 10) cycles
-
 	ASSEMBLY_CLIB_SECTION
 	.global	_U(strcpy_P)
 	.type	_U(strcpy_P), @function
 _U(strcpy_P):
 	X_movw	ZL, src_lo
 	X_movw	XL, dest_lo
-.L_strcpy_P_loop:
-	X_lpm	r0, Z+
-	st	X+, r0
-	tst	r0
-	brne	.L_strcpy_P_loop
+	XJMP	_U(__strcpy_P)
 ; return dest (unchanged)
-	ret
-.L_strcpy_P_end:
-	.size	_U(strcpy_P), .L_strcpy_P_end - _U(strcpy_P)
+
+	.size	_U(strcpy_P), . - _U(strcpy_P)
 
 #endif /* not __DOXYGEN__ */
 

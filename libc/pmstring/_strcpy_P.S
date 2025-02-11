@@ -1,8 +1,4 @@
-/* Copyright (c) 2006, Carlos Lamas
-
-   based on libc/pmstring/strlen_P.S which is
-   Copyright (c) 2002, Marek Michalkiewicz
-
+/* Copyright (c) 2002, 2005, 2006, 2007 Marek Michalkiewicz
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -34,48 +30,23 @@
 
 #if !defined(__AVR_TINY__)
 
-#include "macros.inc"
-
-#define src_b3 r25	/* MSB, ignored */
-#define src_b2 r24
-#define src_b1 r23
-#define src_b0 r22
-
 #if !defined(__DOXYGEN__)
 
-	.text
-	.global	_U(strlen_PF)
-	.type	_U(strlen_PF), @function
+#include "macros.inc"
 
-_U(strlen_PF):
-
-#ifndef __AVR_HAVE_ELPM__
-	X_movw	src_b2, src_b0
-	XJMP	_U(strlen_P)
-#else /* Have ELPM */
-
-	LPM_R0_ZPLUS_INIT src_b2
-	X_movw	ZL, src_b0
-
-.L_strlen_PF_loop:
-
-	LPM_R0_ZPLUS_NEXT src_b2
+	ASSEMBLY_CLIB_SECTION
+	.global	_U(__strcpy_P)
+	.type	_U(__strcpy_P), @function
+_U(__strcpy_P):
+.Loop:
+	X_lpm	r0, Z+
+	st	X+, r0
 	tst	r0
-	brne	.L_strlen_PF_loop
-
-; return RAMPZ:Z - 1 - src = (-1 - src) + RAMPZ:Z = ~src + RAMPZ:Z
-
-	com	src_b0
-	com	src_b1
-	add	src_b0, ZL
-	adc	src_b1, ZH
-	X_movw	src_b2, src_b0	; size_t is 16 bits
-	LPM_R0_ZPLUS_FINI
+	brne	.Loop
 	ret
-#endif /* Have ELPM */
 
-	.size	_U(strlen_PF), . - _U(strlen_PF)
+	.size	_U(__strcpy_P), . - _U(__strcpy_P)
 
-#endif /* not __DOXYGEN__ */
+#endif /* ! __DOXYGEN__ */
 
-#endif /* !defined(__AVR_TINY__) */
+#endif /* ! AVR_TINY */
