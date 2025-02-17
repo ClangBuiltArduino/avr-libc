@@ -549,6 +549,8 @@
 #elif defined (__AVR_ATxmega16D4__)
 #  include <avr/iox16d4.h>
 #elif defined (__AVR_ATxmega32A4__)
+#  include <avr/iox16e5.h>
+#elif defined (__AVR_ATxmega16E5__)
 #  include <avr/iox32a4.h>
 #elif defined (__AVR_ATxmega32A4U__)
 #  include <avr/iox32a4u.h>
@@ -634,6 +636,8 @@
 #  include <avr/ioa5790.h>
 #elif defined (__AVR_ATA5790N__)
 #  include <avr/ioa5790n.h>
+#elif defined (__AVR_ATA5791__)
+#  include <avr/ioa5791.h>
 #elif defined (__AVR_ATA5831__)
 #  include <avr/ioa5831.h>
 #elif defined (__AVR_ATA5272__)
@@ -660,6 +664,10 @@
 #  include <avr/ioa6617c.h>
 #elif defined (__AVR_ATA664251__)
 #  include <avr/ioa664251.h>
+#elif defined (__AVR_ATA8210__)
+#  include <avr/ioa8210.h>
+#elif defined (__AVR_ATA8510__)
+#  include <avr/ioa8510.h>
 /* avr1: the following only supported for assembler programs */
 #elif defined (__AVR_ATtiny28__)
 #  include <avr/iotn28.h>

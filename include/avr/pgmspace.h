@@ -1211,6 +1211,18 @@ extern inline char *strcpy_P(char *, const char *);
 #endif
 
 /** \ingroup avr_pgmspace
+    \fn char *stpcpy_P(char *dest, const char *src)
+
+    The stpcpy_P() function is similar to stpcpy() except that \p src is a
+    pointer to a string in program space.
+
+    \returns The stpcpy_P() function returns a pointer to the
+    terminating '\\0' character of destination string \p dest.
+
+    \since AVR-LibC 2.3   */
+extern char *stpcpy_P(char *, const char *);
+
+/** \ingroup avr_pgmspace
     \fn int strcasecmp_P(const char *s1, const char *s2)
     \brief Compare two strings ignoring case.
 
@@ -1515,6 +1527,22 @@ extern void *memcpy_PF(void *dest, uint_farptr_t src, size_t len);
 extern char *strcpy_PF(char *dest, uint_farptr_t src);
 
 /** \ingroup avr_pgmspace
+    \fn char *stpcpy_PF(char *dst, uint_farptr_t src)
+    \brief Duplicate a string
+
+    The stpcpy_PF() function is similar to stpcpy() except that \e src
+    is a far pointer to a string in program space.
+
+    \param dst A pointer to the destination string in SRAM
+    \param src A far pointer to the source string in Flash
+
+    \returns The stpcpy_PF() function returns a pointer to the
+    terminating '\\0' character of the destination string \e dst.
+
+    \since AVR-LibC 2.3  */
+extern char *stpcpy_PF(char *dest, uint_farptr_t src);
+
+/** \ingroup avr_pgmspace
     \fn char *strncpy_PF(char *dst, uint_farptr_t src, size_t n)
     \brief Duplicate a string until a limited length
 
@@ -1719,14 +1747,28 @@ static inline size_t strlen_P(const char * s);
 #else /* !DOXYGEN */
 
 #ifdef __AVR_TINY__
-/* PR71948: AVR_TINY may use open coded C/C++ to read from progmem.  */
+/* GCC PR71948: AVR_TINY may use open coded C/C++ to read from progmem.  */
 #include <string.h>
 
+#define memcpy_P(x, y, z) memcpy(x, y, z)
 #define strlen_P(x) strlen(x)
 #define strcpy_P(x, y) strcpy(x, y)
+#define stpcpy_P(x, y) stpcpy(x, y)
 
 #else
 
+/* memcpy_P is common so we model its GPR footprint.  */
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+void* memcpy_P(void *__x, const void *__z, size_t __s)
+{
+  register size_t __r20 __asm("20") = __s;
+  void *__ret = __x;
+  __asm volatile ("%~call __memcpy_P" : "+x" (__x), "+z" (__z), "+r" (__r20)
+                  :: "0", "memory");
+  return __ret;
+}
+
+/* strlen_P is common so we model its GPR footprint.  */
 extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
 size_t strlen_P(const char *__s)
 {
@@ -1744,6 +1786,7 @@ size_t strlen_P(const char *__s)
     }
 }
 
+/* strcpy_P is common so we model its GPR footprint.  */
 extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
 char* strcpy_P(char *__x, const char *__z)
 {
@@ -1752,6 +1795,25 @@ char* strcpy_P(char *__x, const char *__z)
                   : "+x" (__x), "+z" (__z) :: "0", "memory");
   return __ret;
 }
+
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+char* stpcpy_P(char *__x, const char *__z)
+{
+  __asm volatile ("%~call __strcpy_P"
+                  : "+x" (__x), "+z" (__z) :: "0", "memory");
+  return __x - 1;
+}
+
+/* strcmp_P is common so we model its GPR footprint.  */
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+int strcmp_P(const char *__x, const char *__z)
+{
+  register int __ret __asm("24");
+  __asm ("%~call __strcmp_P"
+         : "=r" (__ret), "+x" (__x), "+z" (__z) :: "memory");
+  return __ret;
+}
+
 #endif /* AVR_TINY */
 
 #endif /* DOXYGEN */

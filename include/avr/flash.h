@@ -412,7 +412,18 @@ extern inline int strcmp_F(const char *, const __flash char *);
 
     \returns The #strcpy_F function returns a pointer to the destination
     string dest. */
-static inline char *strcpy_F(char *, const __flash char *);
+extern inline char *strcpy_F(char *, const __flash char *);
+
+/** \ingroup avr_flash
+    \fn char *stpcpy_F(char *dest, const __flash char *src)
+
+    The #stpcpy_F function is similar to #stpcpy except that \p src is a
+    pointer to a string in address-space #__flash.
+
+    \returns #stpcpy_F returns a pointer to the <b>end</b> of
+    the string \p dest (that is, the address of the terminating null byte)
+    rather than the beginning.  */
+extern inline char *stpcpy_F(char *, const __flash char *);
 
 /** \ingroup avr_flash
     \fn int strcasecmp_F(const char *s1, const __flash char *s2)
@@ -735,6 +746,20 @@ extern size_t strnlen_FX(const __flashx char *src, size_t len);
     \returns The #strcpy_FX function returns a pointer to the destination
     string \e dst. */
 extern char *strcpy_FX(char *dest, const __flashx char *src);
+
+/** \ingroup avr_flash
+    \fn char *stpcpy_FX(char *dst, const __flashx char *src)
+    \brief Duplicate a string from address-space __flashx
+
+    The #stpcpy_FX function is similar to #stpcpy except that \e src
+    is a string located in address-space #__flashx.
+
+    \param dst A pointer to the destination string in SRAM.
+    \param src A pointer to the source string in #__flashx.
+
+    \returns The stpcpy_PF() function returns a pointer to the
+    terminating '\\0' character of the destination string \e dst.  */
+extern char *stpcpy_FX(char *dest, const __flashx char *src);
 
 /** \ingroup avr_flash
     \fn char *strncpy_FX(char *dst, const __flashx char *src, size_t n)
@@ -1233,30 +1258,48 @@ extern char *strstr_F(const char *, const __flash char *) __asm("strstr_P") __AT
 extern char *strtok_F(char *, const __flash char * __delim) __asm("strtok_P");
 extern char *strtok_rF(char *, const __flash char * __delim, char **__last) __asm("strtok_rP");
 
+/* memcpy_F is common so we model its GPR footprint.  */
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+void* memcpy_F(void *__x, const __flash void *__z, size_t __s)
+{
+  register size_t __r20 __asm("20") = __s;
+  void *__ret = __x;
+  __asm volatile ("%~call __memcpy_P" : "+x" (__x), "+z" (__z), "+r" (__r20)
+                  :: "0", "memory");
+  return __ret;
+}
+
 /* strcmp_F is common so we model strcmp_P's GPR footprint. */
 extern int strcmp_F (const char*, const __flash char*) __asm ("strcmp_P");
 extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
-int strcmp_F (const char *__s, const __flash char *__f)
+int strcmp_F (const char *__x, const __flash char *__z)
 {
-  register const char *__r24 __asm("24") = __s;
-  register const __flash char *__r22 __asm("22") = __f;
   register int __ret __asm("24");
-  __asm ("%~call strcmp_P" : "=r" (__ret) : "r" (__r24), "r" (__r22)
-         : "0", "26", "27", "30", "31", "memory");
+  __asm ("%~call __strcmp_P"
+         : "=r" (__ret), "+x" (__x), "+z" (__z) :: "memory");
   return __ret;
 }
 
 
 /* strcpy_F is common so we model strcpy_P's GPR footprint. */
-extern const char* strcpy_F (char *__s, const __flash char *__f) __asm("strcpy_P");
+extern char* strcpy_F (char *__x, const __flash char *__z) __asm("strcpy_P");
 extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
-const char* strcpy_F (char *__s, const __flash char *__f)
+char* strcpy_F (char *__x, const __flash char *__z)
 {
-  register char *__r24 __asm("24") = __s;
-  register const __flash char *__r22 __asm("22") = __f;
-  __asm volatile ("%~call strcpy_P" :: "r" (__r24), "r" (__r22)
-                  : "0", "26", "27", "30", "31", "memory");
-  return __s;
+  char *__ret = __x;
+  __asm volatile ("%~call __strcpy_P"
+                  : "+x" (__x), "+z" (__z) :: "0", "memory");
+  return __ret;
+}
+
+
+extern char* stpcpy_F (char *__x, const __flash char *__z) __asm("stpcpy_P");
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+char* stpcpy_F (char *__x, const __flash char *__z)
+{
+  __asm volatile ("%~call __strcpy_P"
+                  : "+x" (__x), "+z" (__z) :: "0", "memory");
+  return __x - 1;
 }
 
 
@@ -1304,6 +1347,7 @@ extern int sscanf_F(const char *__buf, const __flash char *__fmt, ...) __asm("ss
 extern size_t strnlen_FX(const __flashx char *, size_t) __asm("strnlen_PF") __ATTR_CONST__;
 extern void *memcpy_FX(void *, const __flashx void *, size_t) __asm("memcpy_PF");
 extern char *strcpy_FX(char *, const __flashx char *) __asm("strcpy_PF");
+extern char *stpcpy_FX(char *, const __flashx char *) __asm("stpcpy_PF");
 extern char *strncpy_FX(char *, const __flashx char *, size_t) __asm("strncpy_PF");
 extern char *strcat_FX(char *, const __flashx char *) __asm("strcat_PF");
 extern size_t strlcat_FX(char *, const __flashx char *, size_t) __asm("strlcat_PF");

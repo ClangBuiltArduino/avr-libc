@@ -290,11 +290,25 @@ extern int strcmp(const char *, const char *) __ATTR_PURE__;
     \returns The strcpy() function returns a pointer to the destination
     string dest.
 
-    \note If the destination string of a strcpy() is not large enough (that
-    is, if the programmer was stupid/lazy, and failed to check the size before
-    copying) then anything might happen.  Overflowing fixed length strings is
-    a favourite cracker technique. */
+    \see strncpy(), stpcpy(), strcpy_P(), strcpy_F().  */
 extern char *strcpy(char *, const char *);
+
+/** \ingroup avr_string
+    \fn char *stpcpy(char *dest, const char *src)
+    \brief Copy a string.
+
+    The stpcpy() function copies the string pointed to by \p src
+    (including the terminating '\\0' character) to the array pointed
+    to by \p dest.
+    The strings may not overlap, and the destination string \p dest must
+    be large enough to receive the copy.
+
+    \returns The stpcpy() function returns a pointer to the <b>end</b> of
+    the string \p dest (that is, the address of the terminating null byte)
+    rather than the beginning.
+
+    \since AVR-LibC v2.3  */
+extern char *stpcpy(char *, const char *);
 
 /** \ingroup avr_string
     \fn int strcasecmp(const char *s1, const char *s2)
@@ -618,6 +632,53 @@ extern char *strupr(char *);
 extern int strcoll(const char *s1, const char *s2);
 extern char *strerror(int errnum);
 extern size_t strxfrm(char *dest, const char *src, size_t n);
+
+/* strlen is common so we model its GPR footprint.  */
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+size_t strlen(const char *__s)
+{
+  if (__builtin_constant_p (__builtin_strlen (__s)))
+    {
+      return __builtin_strlen (__s);
+    }
+  else
+    {
+      register const char *__r24 __asm("24") = __s;
+      register size_t __res __asm("24");
+      __asm ("%~call %x2" : "=r" (__res) : "r" (__r24), "i" (strlen)
+             : "30", "31", "memory");
+      return __res;
+    }
+}
+
+/* strcpy is common so we model its GPR footprint.  */
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+char* strcpy(char *__x, const char *__z)
+{
+  char *__ret = __x;
+  __asm volatile ("%~call __strcpy"
+                  : "+x" (__x), "+z" (__z) :: "memory");
+  return __ret;
+}
+
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+char* stpcpy(char *__x, const char *__z)
+{
+  __asm volatile ("%~call __strcpy"
+                  : "+x" (__x), "+z" (__z) :: "memory");
+  return __x - 1;
+}
+
+/* strcmp is common so we model its GPR footprint.  */
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+int strcmp(const char *__x, const char *__z)
+{
+  register int __ret __asm("24");
+  __asm ("%~call __strcmp"
+         : "=r" (__ret), "+x" (__x), "+z" (__z) :: "memory");
+  return __ret;
+}
+
 #endif	/* !__DOXYGEN__ */
 
 #ifdef __cplusplus

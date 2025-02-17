@@ -1,4 +1,4 @@
-/* Copyright (c) 2012  Georg-Johann Lay
+/* Copyright (c) 2002, 2005, 2006, 2007 Marek Michalkiewicz
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -26,49 +26,50 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$	*/
+/* $Id$ */
 
-#if	!defined (__DOXYGEN__)
 
-#include "asmdef.h"
 
-/* char *ultoa (unsigned long val, char *s, int radix)	*/
+#if !defined(__AVR_TINY__)
 
-#define val_lo	r22
-#define str_lo	r20
-#ifdef __AVR_TINY__
-#define rdx_lo	r26
-#define rdx_hi	r27
+#if !defined(__DOXYGEN__)
+
+#include "macros.inc"
+
+#define len_hi r21
+#define len_lo r20
+
+	ASSEMBLY_CLIB_SECTION
+	.global	_U(__memcpy_P)
+	.type	_U(__memcpy_P), @function
+.L_memcpy_P_begin:
+#if OPTIMIZE_SPEED
+_U(__memcpy_P):
+	sbrs	len_lo, 0
+	rjmp	.L_memcpy_P_even
+	rjmp	.L_memcpy_P_odd
+.Loop:
+	X_lpm	r0, Z+
+	st	X+, r0
+.L_memcpy_P_odd:
+	X_lpm	r0, Z+
+	st	X+, r0
+.L_memcpy_P_even:
+	subi	len_lo, lo8(2)
+	sbci	len_hi, hi8(2)
 #else
-#define rdx_lo	r18
-#define rdx_hi	r19
+.Loop:
+	X_lpm	r0, Z+
+	st	X+, r0
+_U(__memcpy_P):
+	subi	len_lo, lo8(1)
+	sbci	len_hi, hi8(1)
 #endif
-
-
-ENTRY	ultoa
-ENTRY	__ultoa
-#ifdef __AVR_TINY__
-        ;; Radix is passed on the stack
-	in	ZL, SPL_IO_ADDR
-	in	ZH, SPH_IO_ADDR
-	X_adiw 	ZL, 1 + 2	; 2 pushed (RET-address).
-	ld	rdx_lo, Z+
-	ld	rdx_hi, Z+
-#endif
-
-    ; Check radix
-	cpi	rdx_lo, 37
-	cpc	rdx_hi, __zero_reg__
-	brsh	1f
-	cpi	rdx_lo, 2
-	brlo	1f
-	XJMP	_U(__ultoa_ncheck)
-
-1:	X_movw	ZL, str_lo
-	st	Z, __zero_reg__
-	X_movw	r24, str_lo
+	brcc	.Loop
 	ret
 
-ENDFUNC
+	.size	_U(__memcpy_P), . - .L_memcpy_P_begin
 
-#endif	/* !__DOXYGEN__ */
+#endif /* not __DOXYGEN__ */
+
+#endif /* !defined(__AVR_TINY__) */

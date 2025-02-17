@@ -1,4 +1,4 @@
-/* Copyright (c) 2012  Georg-Johann Lay
+/* Copyright (c) 2002, 2007 Marek Michalkiewicz
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -26,49 +26,23 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$	*/
+/* $Id$ */
 
-#if	!defined (__DOXYGEN__)
+#if !defined(__DOXYGEN__)
 
-#include "asmdef.h"
+#include "macros.inc"
 
-/* char *ultoa (unsigned long val, char *s, int radix)	*/
-
-#define val_lo	r22
-#define str_lo	r20
-#ifdef __AVR_TINY__
-#define rdx_lo	r26
-#define rdx_hi	r27
-#else
-#define rdx_lo	r18
-#define rdx_hi	r19
-#endif
-
-
-ENTRY	ultoa
-ENTRY	__ultoa
-#ifdef __AVR_TINY__
-        ;; Radix is passed on the stack
-	in	ZL, SPL_IO_ADDR
-	in	ZH, SPH_IO_ADDR
-	X_adiw 	ZL, 1 + 2	; 2 pushed (RET-address).
-	ld	rdx_lo, Z+
-	ld	rdx_hi, Z+
-#endif
-
-    ; Check radix
-	cpi	rdx_lo, 37
-	cpc	rdx_hi, __zero_reg__
-	brsh	1f
-	cpi	rdx_lo, 2
-	brlo	1f
-	XJMP	_U(__ultoa_ncheck)
-
-1:	X_movw	ZL, str_lo
-	st	Z, __zero_reg__
-	X_movw	r24, str_lo
+	ASSEMBLY_CLIB_SECTION
+	.global	_U(__strcpy)
+	.type	_U(__strcpy), @function
+_U(__strcpy):
+.Loop:
+	ld	__tmp_reg__, Z+
+	st	X+, __tmp_reg__
+	tst	__tmp_reg__
+	brne	.Loop
 	ret
 
-ENDFUNC
+	.size	_U(__strcpy), . - _U(__strcpy)
 
-#endif	/* !__DOXYGEN__ */
+#endif /* not __DOXYGEN__ */

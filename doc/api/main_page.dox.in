@@ -286,6 +286,7 @@ compile-time.
   ATA5782,
   ATA5790,
   ATA5790N,
+  ATA5791,
   ATA5831,
   ATA5795,
   ATA6285,
@@ -296,7 +297,9 @@ compile-time.
   ATA6614Q,
   ATA6616C,
   ATA6617C,
-  ATA664251
+  ATA664251,
+  ATA8210,
+  ATA8510
 </dd>
 <dt>Automotive CAN AVR Devices:</dt>
 <dd>
@@ -381,6 +384,7 @@ compile-time.
   ATxmega8E5,
   ATxmega16A4,
   ATxmega16D4,
+  ATxmega16E5,
   ATxmega32A4,
   ATxmega32D3,
   ATxmega32D4,

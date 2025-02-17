@@ -1,4 +1,4 @@
-/* Copyright (c) 2012  Georg-Johann Lay
+/* Copyright (c) 2002, 2007 Marek Michalkiewicz
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -26,49 +26,34 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$	*/
+/* $Id$ */
 
-#if	!defined (__DOXYGEN__)
+#if !defined(__DOXYGEN__)
 
-#include "asmdef.h"
+#include "macros.inc"
 
-/* char *ultoa (unsigned long val, char *s, int radix)	*/
+TINY_WEAK_ALIAS _U(stpcpy_P) _U(stpcpy)
 
-#define val_lo	r22
-#define str_lo	r20
+#define dest_hi r25
+#define dest_lo r24
+#define src_hi r23
+#define src_lo r22
+
+	ASSEMBLY_CLIB_SECTION
+	.global	_U(stpcpy)
+	.type	_U(stpcpy), @function
+_U(stpcpy):
+	X_movw	ZL, src_lo
+	X_movw	XL, dest_lo
+	XCALL	_U(__strcpy)
 #ifdef __AVR_TINY__
-#define rdx_lo	r26
-#define rdx_hi	r27
+	ld	__tmp_reg__, -X
 #else
-#define rdx_lo	r18
-#define rdx_hi	r19
+	X_sbiw	XL, 1
 #endif
-
-
-ENTRY	ultoa
-ENTRY	__ultoa
-#ifdef __AVR_TINY__
-        ;; Radix is passed on the stack
-	in	ZL, SPL_IO_ADDR
-	in	ZH, SPH_IO_ADDR
-	X_adiw 	ZL, 1 + 2	; 2 pushed (RET-address).
-	ld	rdx_lo, Z+
-	ld	rdx_hi, Z+
-#endif
-
-    ; Check radix
-	cpi	rdx_lo, 37
-	cpc	rdx_hi, __zero_reg__
-	brsh	1f
-	cpi	rdx_lo, 2
-	brlo	1f
-	XJMP	_U(__ultoa_ncheck)
-
-1:	X_movw	ZL, str_lo
-	st	Z, __zero_reg__
-	X_movw	r24, str_lo
+	X_movw	dest_lo, XL
 	ret
 
-ENDFUNC
+	.size	_U(stpcpy), . - _U(stpcpy)
 
-#endif	/* !__DOXYGEN__ */
+#endif /* not __DOXYGEN__ */
