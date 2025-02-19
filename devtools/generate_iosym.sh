@@ -42,7 +42,7 @@ atxmega32a4 atxmega32d4 atxmega64a1 atxmega64a1u atxmega64a3 \
 atxmega64d3 at90pwm161 ata5272 ata5505 ata5790 ata5791 ata5795 ata6285 \
 ata6286 ata6616c atmega1284 atmega128a atmega164pa atmega165pa atmega168pa \
 atmega168pb atmega328pb atmega324pb \
-ata8210 ata8510 \
+ata8210 ata8510 ata5835 ata5787 ata5700m322 \
 atmega3250pa atmega325pa atmega3290pa atmega32a atmega48pa atmega64a \
 atmega8a attiny1634 attiny828 atxmega128a3u atxmega128a4u atxmega128b1 \
 atxmega128b3 atxmega128c3 atxmega128d4 atxmega16a4u atxmega16c4 atxmega16e5 \
@@ -56,6 +56,8 @@ avr64da64 avr64db28 avr64db32 avr64db48 avr64db64 avr64dd14 avr64dd20 \
 avr64dd28 avr64dd32 avr128da28 avr128da32 avr128da48 avr128da64 avr128db28 \
 avr128db32 avr128db48 avr128db64 avr16ea28 avr16ea32 avr16ea48 avr16eb14 \
 avr16eb20 avr16eb28 avr16eb32 avr32ea28 avr32ea32 avr32ea48 avr64ea28 avr64ea32 avr64ea48 \
+avr16du14 avr16du20 avr16du28 avr16du32 \
+avr32du14 avr32du20 avr32du28 avr32du32 avr64du28 avr64du32 \
 "}
 
 if [ x"$ATDFDIR" = x ]
@@ -67,7 +69,7 @@ fi
 for dev in $devs
 do
     xmldev=$(echo $dev | tr '[a-z]' '[A-Z]' |\
-             sed -e s/XMEGA/xmega/ -e s/MEGA/mega/ -e s/TINY/tiny/)
+        sed -e s/XMEGA/xmega/ -e s/MEGA/mega/ -e s/TINY/tiny/ -e s/AUTO/auto/)
     if [ -f "${ATDFDIR}/${xmldev}.atdf" ]
     then
         echo "Generating ${dev}.S"
