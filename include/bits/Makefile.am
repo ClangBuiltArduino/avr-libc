@@ -25,13 +25,15 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# $Id$
-#
 
 avrdir = $(prefix)/avr/include/bits
+
 avr_HEADERS = \
-    attribs.h
+    attribs.h \
+    def-flash-read.h \
+    def-pgm-read.h \
+    def-pgm-read-far.h \
+    lpm-elpm.h
 
 nodist_avr_HEADERS = \
     devinfo.h

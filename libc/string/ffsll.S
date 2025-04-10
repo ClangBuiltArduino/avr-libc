@@ -26,13 +26,11 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 #if !defined(__AVR_TINY__)
 
 #ifndef	__DOXYGEN__
 
-#include "macros.inc"
+#include "asmdef.h"
 
 #define	val_0	r18
 #define	val_8	r19
@@ -47,10 +45,7 @@
 #define	wrd_hi	r31
 #define	cntr	r18
 
-    ASSEMBLY_CLIB_SECTION
-    .global	_U(ffsll)
-    .type	_U(ffsll), @function
-_U(ffsll):
+ENTRY _U(ffsll)
 
 	X_movw	wrd_lo, val_0
 	ldi	cntr, 1
@@ -81,8 +76,7 @@ _U(ffsll):
 	clr	r25
 9:	ret
 
-    .size  _U(ffsll), . - _U(ffsll)
-    .end
+ENDFUNC
 
 #endif	/* not __DOXYGEN__ */
 

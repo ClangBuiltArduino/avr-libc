@@ -30,10 +30,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-# $Id$
-#
 # Process this file with autoconf to produce a configure script.
-#
+
 
 dnl library versioning -- modify these on releases
 dnl        macro name           value            description
@@ -261,7 +259,7 @@ AM_CONDITIONAL(HAS_DEV_LIB, [test x$enable_device_lib = xtrue])
 dnl TODO: Check for various tools used to build the documentation. If anything
 dnl is missing, don't build the docs by default.
 
-dnl Disable building of dox by default since it they may not build properly on
+dnl Disable building of dox by default since they may not build properly on
 dnl all systems. This isn't optimal, but how do we work around the user not
 dnl having fig2dev and still build all the formats?
 
@@ -534,7 +532,7 @@ AC_DEFUN(
     old_CFLAGS=${CFLAGS}
     CFLAGS="-mmcu=$1"
     CC=`echo "${CC}" | sed 's/-mmcu=avr.//'`
-    AC_MSG_CHECKING(if ${CC} has support for $1)
+    AC_MSG_CHECKING(if ${CC} supports $1)
     AC_COMPILE_IFELSE(
       [AC_LANG_SOURCE([],[])],
       [has_dev_support=yes],
@@ -556,11 +554,13 @@ dnl Same replacements as performed by mlib-gen.py::to_ident().
 		| sed -e 's:-:_:g' \
 		`
       eval "DEVLIST_${ident}=\"\${DEVLIST_${ident}} $1\""
+      SUPPORTED_MCUS="${SUPPORTED_MCUS} $1"
       upper=$(echo "$1" | tr a-z A-Z)
       defd="defined(__AVR_${upper}__)"
       AS_CASE([$1],
 	      [[avr*[0-9]d*]], [COND_DEFINED_Dx="${COND_DEFINED_Dx} || ${defd}"],
 	      [[avr*[0-9]e*]], [COND_DEFINED_Ex="${COND_DEFINED_Ex} || ${defd}"],
+	      [[avr*[0-9]sd*]], [COND_DEFINED_SD="${COND_DEFINED_SD} || ${defd}"],
 	      [])
     else
       MULTIDIR_$1=
@@ -584,7 +584,7 @@ AC_DEFUN(
     then
       old_CFLAGS=${CFLAGS}
       CFLAGS="-mmcu=$1 -I${srcdir}/include"
-      AC_MSG_CHECKING(if $1 supports a compact vector table)
+      AC_MSG_CHECKING(compact vector table support for $1)
       AC_COMPILE_IFELSE(
         [AC_LANG_SOURCE([
 	  #include <avr/io.h>
@@ -617,7 +617,7 @@ AC_DEFUN(
   [
     old_CC=${CC}
     CC=`echo "${CC}" | sed 's/-mmcu=avr.//'`
-    AC_MSG_CHECKING(whether ${CC} supports $1 as a multilib selector)
+    AC_MSG_CHECKING(if ${CC} supports multilib option $1)
 
     pml=`${CC} -print-multi-lib | sed 's/@/ -/g'`
     opt=`echo "$1" | sed 's/-/\\\\-/g'`
@@ -644,7 +644,7 @@ AC_DEFUN(
   [
     old_CC=${CC}
     CC=`echo "${CC}" | sed 's/-mmcu=avr.//'`
-    AC_MSG_CHECKING(whether ${CC} supports $1 as a multilib path)
+    AC_MSG_CHECKING(if ${CC} supports multilib $1)
     mdir=`echo "$1" | sed -e 's/\\./\\\\./g'`
     pml=`${CC} -print-multi-lib | grep -e "^${mdir};"`
     if test "x$pml" != "x"; then
@@ -676,13 +676,17 @@ AC_SUBST(DIR_avr1)
 
 COND_DEFINED_Dx="0"
 COND_DEFINED_Ex="0"
+COND_DEFINED_SD="0"
+SUPPORTED_MCUS=""
 
 m4_include([devices.m4])
 
+AC_SUBST(SUPPORTED_MCUS)
 AC_SUBST(COND_DEFINED_Dx)
 AC_SUBST(COND_DEFINED_Ex)
+AC_SUBST(COND_DEFINED_SD)
 
-dnl The following include must preceed multilib.m4 and is only
+dnl The following include must precede multilib.m4 and is only
 dnl needed with avr-gcc v4.9 or older, namely if !HAS_DEV_LIB.
 m4_include([devlist.m4])
 
@@ -693,6 +697,7 @@ m4_include([multilib.m4])
 AC_CONFIG_FILES([
 	Makefile
 	avr-libc.spec
+	supported-mcus.txt
 	common/Makefile
 	crt1/Makefile
 	crt1/iosym/Makefile
@@ -717,6 +722,7 @@ AC_CONFIG_FILES([
 	libc/time/Makefile
 	libm/Makefile
 	libm/fplib/Makefile
+	libm/fxlib/Makefile
 	scripts/Makefile
 	devtools/Makefile
 ])

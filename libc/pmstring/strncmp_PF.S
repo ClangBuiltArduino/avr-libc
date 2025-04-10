@@ -30,11 +30,9 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 #if !defined(__AVR_TINY__)
 
-#include "macros.inc"
+#include "asmdef.h"
 
 #define s1_b1 r25
 #define s1_b0 r24
@@ -50,11 +48,7 @@
 
 #if !defined(__DOXYGEN__)
 
-	.text
-	.global	_U(strncmp_PF)
-	.type	_U(strncmp_PF), @function
-
-_U(strncmp_PF):
+ENTRY _U(strncmp_PF)
 
 	X_movw	ZL, s2_b0
 	LPM_R0_ZPLUS_INIT s2_b2
@@ -82,10 +76,7 @@ _U(strncmp_PF):
 	sbc	ret_b1, ret_b1
 	LPM_R0_ZPLUS_FINI
 	ret
-
-.L_strncmp_PF_end:
-
-	.size	_U(strncmp_PF), .L_strncmp_PF_end - _U(strncmp_PF)
+ENDFUNC
 
 #endif /* not __DOXYGEN__ */
 

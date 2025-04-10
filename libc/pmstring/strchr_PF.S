@@ -27,13 +27,11 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 #if !defined(__AVR_TINY__)
 
 #if !defined(__DOXYGEN__)
 
-#include "macros.inc"
+#include "asmdef.h"
 
 #define str_hh	r24
 #define str_hi	r23
@@ -46,10 +44,7 @@
 #define ret_hi  r23
 #define ret_lo  r22
 
-	ASSEMBLY_CLIB_SECTION
-	.global	_U(strchr_PF)
-	.type	_U(strchr_PF), @function
-_U(strchr_PF):
+ENTRY _U(strchr_PF)
 	X_movw	ZL, str_lo
 	LPM_R0_ZPLUS_INIT str_hh
 1:
@@ -71,7 +66,7 @@ _U(strchr_PF):
 	LPM_R0_ZPLUS_FINI
 	ret
 
-	.size	_U(strchr_PF), . - _U(strchr_PF)
+ENDFUNC
 
 #endif /* not __DOXYGEN__ */
 

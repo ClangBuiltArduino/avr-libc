@@ -26,22 +26,16 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$	*/
-
 #ifndef	__DOXYGEN__
 
-#include "macros.inc"
+#include "asmdef.h"
 
-	ASSEMBLY_CLIB_SECTION
-	.global _U(abort)
-	.type	_U(abort), "function"
-
-_U(abort):
+ENTRY _U(abort)
 	ldi	r24, lo8(1)
 	ldi	r25, hi8(1)
 	cli
 	XJMP	_U(_exit)
 
-	.size	_U(abort), . - _U(abort)
+ENDFUNC
 
 #endif	/* !__DOXYGEN__	*/

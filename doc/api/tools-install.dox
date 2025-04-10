@@ -28,8 +28,6 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 /**
 
 \page install_tools Building and Installing the GNU Tool Chain
@@ -85,10 +83,12 @@ systems, and another section for Windows.
 
 <dt>AVR-LibC</dt>
 <dd>
-  Project Home: http://savannah.gnu.org/projects/avr-libc <br>
-  Source Downloads: https://download-mirror.savannah.gnu.org/releases/avr-libc <br>
+  New Project Home: https://avrdudes.github.io/avr-libc <br>
+  New Source Downloads (&ge; v2.2): https://github.com/avrdudes/avr-libc/releases <br>
   Git: %https://github.com/avrdudes/avr-libc.git <br>
   GitHub: https://github.com/avrdudes/avr-libc <br>
+  Old Project Home: http://savannah.gnu.org/projects/avr-libc <br>
+  Old Source Downloads (&le; v2.1): https://download-mirror.savannah.gnu.org/releases/avr-libc <br>
   \ref install_avr_libc "Installation"
 </dd>
 </dl>
@@ -369,6 +369,12 @@ Where the \c \--build platform can be guessed by running
 $ ./source/avr-libc-<version>/config.guess
 \endverbatim
 
+When you want to build and install with extra options, you can for example:
+\verbatim
+$ make CFLAGS=-Werror CCASFLAGS=-Werror
+$ make install prefix=/home/me/install/my-avr-gcc
+\endverbatim
+
 
 \subsection install_avrprog AVRDUDE
 \addindex installation, avrprog
@@ -564,7 +570,7 @@ GCC top source.  GCC will configure and build these libs during
     - Version 9.00
     - <https://www.ghostscript.com>
     - Download and install.
-    - In the \\bin subdirectory of the installaion, copy gswin32c.exe to gs.exe.
+    - In the \\bin subdirectory of the installation, copy gswin32c.exe to gs.exe.
 
 - Set the \c TEMP and \c TMP environment variables to <b><tt>c:\\\\temp</tt></b>
   or to the
@@ -610,7 +616,7 @@ make all html install install-html 2>&1 | tee binutils-make.log
 
 
 - <b>GCC</b><br>
-    - Open source code pacakge and patch as necessary.
+    - Open source code package and patch as necessary.
     - Configure and build in a directory outside of the source code tree.
     - Set PATH, in order:
         - \<MikTex executables\>
@@ -717,7 +723,7 @@ make -k all install 2>&1 | tee $package-make.log
     - Delete backup copy of avrdude config file in install directory if exists.
 
 - <b>Insight/GDB</b><br>
-    - Open source code pacakge and patch as necessary.
+    - Open source code package and patch as necessary.
     - Configure and build in a directory outside of the source code tree.
     - Set PATH, in order:
         - \<MikTex executables\>

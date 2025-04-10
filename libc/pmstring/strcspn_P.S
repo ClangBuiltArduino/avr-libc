@@ -26,13 +26,11 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 #if !defined(__AVR_TINY__)
 
 #ifndef	__DOXYGEN__
 
-#include "macros.inc"
+#include "asmdef.h"
 
 #define str_lo	r24
 #define str_hi	r25
@@ -41,11 +39,7 @@
 
 #define chs	r21	/* char from s[]	*/
 
-	ASSEMBLY_CLIB_SECTION
-	.global _U(strcspn_P)
-	.type   _U(strcspn_P), @function
-
-_U(strcspn_P):
+ENTRY _U(strcspn_P)
 	X_movw	XL, str_lo
   ; get next symbol from s[]
 1:	ld	chs, X+		; *s++
@@ -65,8 +59,8 @@ _U(strcspn_P):
 	add	str_lo, XL
 	adc	str_hi, XH
 	ret
+ENDFUNC
 
-	.size _U(strcspn_P), . - _U(strcspn_P)
 #endif	/* !__DOXYGEN__ */
 
 #endif /* !defined(__AVR_TINY__) */

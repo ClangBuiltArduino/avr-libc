@@ -26,23 +26,14 @@
    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
    POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 #ifndef	__DOXYGEN__
 
-#include "macros.inc"
-#include "alias.h"
+#include "asmdef.h"
 
-	ASSEMBLY_CLIB_SECTION
-	.global	atoff
-	.type	atoff, "function"
-atoff:
-DALIAS atof
-LALIAS atofl
+ENTRY_FLOAT atoff atof atofl
 	clr	r22
 	clr	r23
-	XJMP	strtod
+	XJMP	_U(strtod)
+ENDFUNC
 
-	.size atoff, .-atoff
-	.end
 #endif	/* !__DOXYGEN__ */

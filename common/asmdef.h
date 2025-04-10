@@ -1,4 +1,5 @@
-/* Copyright (c) 2007, Dmitry Xmelkov
+/* Copyright (c) 2002, 2005, 2006, 2007 Marek Michalkiewicz
+   Copyright (c) 2006-2007 Dmitry Xmelkov
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -26,61 +27,65 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$	*/
+/*
+   Provided C #defines
+   ===================
 
-#ifndef	_ASMDEF_H
+   _U                         ; Doesn't do anything but is nice to find
+                              ; global symbols in the asm sources.
+   __tmp_reg__
+   __zero_reg__
+   XJMP
+   XCALL
+   XL, XH                     ; Via avr/common.h
+   YL, YH                     ; Via avr/common.h
+   ZL, ZH                     ; Via avr/common.h
+
+   FUNCTION                   ; Just for #ifdef
+
+   Provided asm .macros
+   ====================
+
+   FUNCTION
+   ENTRY
+   ENTRY_FLOAT
+   ENDFUNC
+
+   REGNO                      ; Helper for the X_ macros.
+   X_movw
+   X_sbiw
+   X_adiw
+   X_lpm
+
+   LPM_R0_ZPLUS_INIT          ; Formerly in macros.inc
+   LPM_R0_ZPLUS_NEXT          ; Formerly in macros.inc
+   LPM_R0_ZPLUS_FINI          ; Formerly in macros.inc
+
+   TINY_WEAK_ALIAS
+*/
+
+#ifndef _ASMDEF_H
 #define _ASMDEF_H
+
+/* Defines such as SPL, SPH, XL, XH,
+   SREG, EIND, RAMPZ, ...  */
+#include <avr/common.h>
 
 #include "sectionname.h"
 
 /* Macros in this header use local symbols with `.L__' prefix. */
 
-#ifndef __AVR_HAVE_MOVW__
-# if  defined(__AVR_ENHANCED__) && __AVR_ENHANCED__
-#  define __AVR_HAVE_MOVW__ 1
-# else
-#  define __AVR_HAVE_MOVW__ 0
-# endif
-#endif
-
-#ifndef __AVR_HAVE_LPMX__
-# if  defined(__AVR_ENHANCED__) && __AVR_ENHANCED__
-#  define __AVR_HAVE_LPMX__ 1
-# else
-#  define __AVR_HAVE_LPMX__ 0
-# endif
-#endif
-
 /* Historically, the _U() was intended to concatenate '_' prefix.
    Let us save it, as one is useful to find externals quickly.	*/
 #define	_U(name)	name
 
-#if !defined(__tmp_reg__)
-    #if defined(__AVR_TINY__)
-        #define __tmp_reg__ r16
-    #else
-        #define __tmp_reg__ r0
-    #endif
+#if defined(__AVR_TINY__)
+    #define __tmp_reg__  r16
+    #define __zero_reg__ r17
+#else
+    #define __tmp_reg__  r0
+    #define __zero_reg__ r1
 #endif
-
-#if !defined(__zero_reg__)
-    #if defined(__AVR_TINY__)
-        #define __zero_reg__ r17
-    #else
-        #define __zero_reg__ r1
-    #endif
-#endif
-
-
-#define	XL	r26
-#define	XH	r27
-#define	YL	r28
-#define	YH	r29
-#define	ZL	r30
-#define	ZH	r31
-
-#define SPL_IO_ADDR	0x3D
-#define SPH_IO_ADDR	0x3E
 
 #if	defined(__AVR_HAVE_JMP_CALL__)
 # define XJMP	jmp
@@ -91,11 +96,12 @@
 #endif
 
 /* Macro FUNCTION is intended to start a function body without an entry.
-   It is needed where an entry is at the middle of function. After this,
-   you can use the ENTRY macro below multiple times.
+   It is needed where an entry is at the middle of function, like in
+   libc/pmstring/_memcpy_P.S.  After this, you can use the ENTRY macro
+   below multiple times.
 
    TODO: make a possibility to define a few of blocks FUNCTION..ENDFUNC
-   in a one source file.
+   in a one source file, see libc/stdlib/setjmp.S for a use case.
  */
 .macro	FUNCTION name
   .ifdef  .L__function
@@ -121,6 +127,8 @@
 .macro	ENTRY	name
   .ifndef .L__function
 FUNCTION \name
+  .else
+	.type	_U(\name), "function"
   .endif
 	.global	_U(\name)
 _U(\name):
@@ -132,16 +140,18 @@ _U(\name):
    __asm__ in the declaration to specify the symbol to reference,
    it is preferable to provide actual symbols in the library, so
    that code that expects to be able to use them directly -
-   like gcc/gcc/testsuite/gcc.dg/pr41963.c using sqrtf - will work.  */
+   like gcc/testsuite/gcc.dg/pr41963.c using sqrtf - will work.  */
 
 .macro	ENTRY_FLOAT  fname  dname  lname
 ENTRY \fname
 #if (__SIZEOF_DOUBLE__ == __SIZEOF_FLOAT__)
 	.weak	_U(\dname)
+	.type	_U(\dname), "function"
 _U(\dname):
 #endif /* double = float */
 #if (__SIZEOF_LONG_DOUBLE__ == __SIZEOF_FLOAT__)
 	.weak	_U(\lname)
+	.type	_U(\lname), "function"
 _U(\lname):
 #endif /* long double = float */
 .endm
@@ -258,7 +268,7 @@ _U(\lname):
     .exitm
   .endif
 
-    subi	.L__adiw_dst,     lo8(-(\val))
+	subi	.L__adiw_dst,     lo8(-(\val))
 	sbci	.L__adiw_dst + 1, hi8(-(\val))
 #endif /* AVR_TINY */
 .endm
@@ -332,8 +342,67 @@ _U(\lname):
   .endif
 .endm
 
-#ifndef HAVE_TINY_WEAK_ALIAS
-#define HAVE_TINY_WEAK_ALIAS
+
+/*
+   LPM_R0_ZPLUS_INIT is used before the loop to initialize RAMPZ
+   for future devices with RAMPZ:Z auto-increment - [e]lpm r0, Z+.
+
+   LPM_R0_ZPLUS_NEXT is used inside the loop to load a byte from
+   the program memory at [RAMPZ:]Z to R0, and increment [RAMPZ:]Z.
+
+   The argument in both macros is a register that contains the
+   high byte (bits 23-16) of the address, bits 15-0 should be in
+   the Z (r31:r30) register.  It can be any register except for:
+   r0, r1 (__zero_reg__ - assumed to always contain 0), r30, r31.
+
+   LPM_R0_ZPLUS_FINI is used atfer all reads to restore RAMPZ
+   in the case a restoration is required.
+ */
+
+	.macro	LPM_R0_ZPLUS_INIT hhi
+#if __AVR_ENHANCED__
+  #if __AVR_HAVE_ELPM__
+	out	RAMPZ_IO_ADDR, \hhi
+  #endif
+#endif
+	.endm
+
+	.macro	LPM_R0_ZPLUS_NEXT hhi
+#if __AVR_ENHANCED__
+  #if __AVR_HAVE_ELPM__
+    /* ELPM with RAMPZ:Z post-increment, load RAMPZ only once */
+	elpm	r0, Z+
+  #else
+    /* LPM with Z post-increment, max 64K, no RAMPZ (ATmega83/161/163/32) */
+	lpm	r0, Z+
+  #endif
+#else
+  #if __AVR_HAVE_ELPM__
+    /* ELPM without post-increment, load RAMPZ each time (ATmega103) */
+	out	RAMPZ_IO_ADDR, \hhi
+	elpm
+	adiw	r30,1
+	adc	\hhi, __zero_reg__
+  #else
+    /* LPM without post-increment, max 64K, no RAMPZ (AT90S*) */
+	lpm
+	adiw	r30,1
+  #endif
+#endif
+	.endm
+
+/* We only have to restore RAMPZ when the device has the RAMPD (sic!)
+   register.  In that case, we have to restore RAMPZ to zero because
+   RAMPZ is concatenated with Z to get 24-bit addresses for RAM access.
+   When the device has no RAMPD, then the device has no RAMPZ, or RAMPZ
+   is used exclusively with ELPM and need not to be restored.  */
+	.macro	LPM_R0_ZPLUS_FINI
+#if defined(__AVR_HAVE_ELPM__) && defined(__AVR_HAVE_RAMPD__)
+	out	RAMPZ_IO_ADDR, __zero_reg__
+#endif
+	.endm
+
+
 .macro TINY_WEAK_ALIAS new old
 #ifdef __AVR_TINY__
     .weak \new
@@ -341,6 +410,6 @@ _U(\lname):
     \new = \old
 #endif /* __AVR_TINY__ */
 .endm
-#endif /* !HAVE_TINY_WEAK_ALIAS */
+
 
 #endif	/* !_ASMDEF_H */

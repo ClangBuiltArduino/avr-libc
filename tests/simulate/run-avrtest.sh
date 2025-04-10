@@ -28,8 +28,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-# $Id$
-
 # Script for testing AVR-LibC functions, mainly, by simulating.
 # AVRtest is needed. The script is tuned to run after 'make'
 # without any options, at this place.  Use
@@ -170,6 +168,7 @@ while getopts $OPTS opt ; do
 done
 shift $((OPTIND - 1))
 test_list=${*:-"time/*.c regression/*.c stdlib/*.c string/*.c pmstring/*.c \
+		stdfix/*.c \
 		printf/*.c scanf/*.c fplib/*.c math/*.c other/*.c \
 		util/*.c"}
 
@@ -238,6 +237,10 @@ set_extra_options ()
     # To test the pgm_read_far functions.
     local o_pgmx="-include high-progmemx.h"
     case $1 in
+	atmega8)
+	    o_sim="-mmcu=avr4"
+	    o_gcc="$(o_mem 0 0x2000 0xffff)"
+	    ;;
 	atmega128 | atmega103)
 	    o_gcc="$(o_mem 0 0x2000 0xffff) $o_pgmx"
 	    ;;
@@ -276,7 +279,7 @@ set_extra_options ()
 	    exit 1
 	;;
     esac
-    o_gcc="$o_gcc ${AVRTEST_HOME}/exit-$1.o -DUSE_AVRTEST"
+    o_gcc="$o_gcc ${AVRTEST_HOME}/exit-$1.o -I${AVRTEST_HOME} -DUSE_AVRTEST"
 }
 
 
@@ -334,7 +337,7 @@ Skip_with_avrtest ()
     esac
 
     grep -i eeprom    $1 > /dev/null && skip_why="EEPROM"
-    grep -i sfr       $1 > /dev/null && skip_why="SFRs"
+    grep -i sfr_      $1 > /dev/null && skip_why="SFRs"
     reason=$(grep SKIP_AVRTEST $1) > /dev/null \
 	&& skip_why=$(echo "$reason" | awk -F\" '{ print $2 }' )
 
@@ -402,6 +405,8 @@ Compile ()
 	fi
 	;;
     esac
+
+    libs="-Wl,--start-group $libs -Wl,--end-group"
 
     # The GCC 4.1 (and older) does not define __ASSEMBLER__ with
     # '-std=gnu99' option for *.S sources.

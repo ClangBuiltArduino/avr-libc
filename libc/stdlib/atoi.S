@@ -26,8 +26,6 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
  /*
    Contributors:
      Created by Reiner Patommel
@@ -59,7 +57,7 @@
 
 #if !defined(__DOXYGEN__)
 
-#include "macros.inc"
+#include "asmdef.h"
 
 #define str_hi	r25
 #define str_lo	r24
@@ -70,10 +68,6 @@
 #else
 #define tmp	r18
 #endif
-
-	ASSEMBLY_CLIB_SECTION
-	.global _U(atoi)
-	.type   _U(atoi), @function
 
 /*
    Skip leading spaces and tabs.  Process optional sign.  Stop conversion
@@ -87,7 +81,7 @@
   .err
 .endif
 
-_U(atoi):
+ENTRY _U(atoi)
 	X_movw	ZL, str_lo		; set pointer to string
 	CLR	num_lo
 	CLR	num_hi			; clear number
@@ -109,7 +103,7 @@ _U(atoi):
 	SET				; remember number is negative
 	RJMP	.L_atoi_loop2
 
-2:	XCALL	__mulhi_const_10	; r25:r24 *= 10
+2:	XCALL	_U(__mulhi_const_10)	; r25:r24 *= 10
 	ADD	num_lo, tmp		; num = (num * 10) + (tmp - '0')
 	ADC	num_hi, __zero_reg__
 .L_atoi_loop2:
@@ -126,7 +120,6 @@ _U(atoi):
 .L_atoi_done:
 	RET
 
-.L_atoi_end:
-	.size _U(atoi), .L_atoi_end - _U(atoi)
+ENDFUNC
 
 #endif /* not __DOXYGEN__ */

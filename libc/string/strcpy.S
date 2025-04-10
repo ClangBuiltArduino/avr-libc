@@ -26,11 +26,9 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 #if !defined(__DOXYGEN__)
 
-#include "macros.inc"
+#include "asmdef.h"
 
 TINY_WEAK_ALIAS _U(strcpy_P) _U(strcpy)
 
@@ -39,15 +37,12 @@ TINY_WEAK_ALIAS _U(strcpy_P) _U(strcpy)
 #define src_hi r23
 #define src_lo r22
 
-	ASSEMBLY_CLIB_SECTION
-	.global	_U(strcpy)
-	.type	_U(strcpy), @function
-_U(strcpy):
+ENTRY _U(strcpy)
 	X_movw	ZL, src_lo
 	X_movw	XL, dest_lo
 	XJMP	_U(__strcpy)
 ; return dest (unchanged)
 
-	.size	_U(strcpy), . - _U(strcpy)
+ENDFUNC
 
 #endif /* not __DOXYGEN__ */

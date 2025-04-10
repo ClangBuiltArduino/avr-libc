@@ -26,21 +26,16 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 #if !defined(__AVR_TINY__)
 
 #if !defined(__DOXYGEN__)
 
-#include "macros.inc"
+#include "asmdef.h"
 
 #define ret_hi r25
 #define ret_lo r24
 
-	ASSEMBLY_CLIB_SECTION
-	.global	_U(__strcmp_P)
-	.type	_U(__strcmp_P), @function
-_U(__strcmp_P):
+ENTRY _U(__strcmp_P)
 .Loop:
 	ld	ret_lo, X+
 	X_lpm	r0, Z+
@@ -51,7 +46,7 @@ _U(__strcmp_P):
 	sbc	ret_hi, ret_hi
 	ret
 
-	.size	_U(__strcmp_P), . - _U(__strcmp_P)
+ENDFUNC
 
 #endif /* not __DOXYGEN__ */
 

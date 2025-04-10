@@ -27,8 +27,6 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 /** \mainpage AVR-LibC
 
 \section avr_libc_intro Introduction
@@ -499,6 +497,12 @@ compile-time.
   AVR64EA28,
   AVR64EA32,
   AVR64EA48
+</dd>
+<dt>AVR-SD Functional Safety Devices:</dt>
+<dd>
+  AVR32SD20,
+  AVR32SD28,
+  AVR32SD32
 </dd>
 <dt>Wireless AVR Devices:</dt>
 <dd>

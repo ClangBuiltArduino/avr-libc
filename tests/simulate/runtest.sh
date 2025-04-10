@@ -28,8 +28,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-# $Id$
-
 # Script for testing AVR-LibC fuctions, mainly, by simulating. An installed
 # simulavr is needed. The simulavr-0.1.2.1 is suitable, only the correction
 # of divide_by_zero error is needed. The script is tuned to run after 'make'
@@ -107,6 +105,7 @@ while getopts $OPTS opt ; do
 done
 shift $((OPTIND - 1))
 test_list=${*:-"time/*.c regression/*.c stdlib/*.c string/*.c pmstring/*.c \
+		stdfix/*.c \
 		printf/*.c scanf/*.c fplib/*.c math/*.c other/*.c \
 		avr/*.[cS]"}
 
@@ -222,6 +221,8 @@ Compile ()
 	fi
 	;;
     esac
+
+    libs="-Wl,--start-group $libs -Wl,--end-group"
 
     # The GCC 4.1 (and older) does not define __ASSEMBLER__ with
     # '-std=gnu99' option for *.S sources.

@@ -26,8 +26,6 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 /** \page FAQ Frequently Asked Questions
 
 \section faq_index FAQ Index
@@ -58,6 +56,7 @@
   - \ref faq_assign_chain
   - \ref faq_use_bv
   - \ref faq_tinyavr_c
+  - \ref faq_AVRrc
 
 - <b>(Inline) Assembly</b>
 
@@ -273,7 +272,8 @@ effects of the C++ calling conventions like implied copy constructors
 that could be called upon function invocation etc.  These things could
 easily add up into a considerable amount of time and program memory
 wasted.  Thus, casual inspection of the generated assembler code
-(using the \c -S compiler option) seems to be warranted.
+(using the \ref opt_save_temps "-save-temps" compiler option)
+seems to be warranted.
 
 <small>Back to \ref faq_index.</small>
 
@@ -1176,12 +1176,28 @@ cannot be determined that easily. For example, if
 you recursively call a function and forget to break
 that recursion, the amount of stack required is
 infinite. :-) You can look at the generated assembler
-code (<tt>avr-gcc ... -S</tt>), there's a comment in each
+code (<tt>avr-gcc ... \ref opt_save_temps "-save-temps"</tt>),
+there's a comment in each
 generated assembler file that tells you the frame
-size for each generated function. That's the amount
-of stack required for this function, you have to add
-up that for all functions where you know that the
-calls could be nested.
+size for each generated function.
+
+GCC also supports \c -fstack-usage that generates an \c \.su text
+file for each compilation unit:
+
+\code
+int main (void)
+{
+    return 0;
+}
+
+$ avr-gcc -c main.c -Os -fstack-usage
+$ cat main.su
+
+main.c:3:5:main	2	static
+\endcode
+
+That's the amount of stack required for this function, you have to add
+up that for all functions where you know that the calls could be nested.
 
 <small>Back to \ref faq_index.</small>
 
@@ -1197,6 +1213,20 @@ Bruce D. Lightner wrote an excellent description of how to do this,
 and offers this together with a toolkit on his web page:
 
 http://lightner.net/avr/ATtinyAvrGcc.html
+
+<small>Back to \ref faq_index.</small>
+
+\section faq_AVRrc What features are (not) supported on AVRrc Reduced Core devices?
+
+On the reduced AVRrc core with only 16 general purpose registers, the following
+features are not supported:
+
+- The printf and scanf families of functions
+- Floating-point arithmetic
+- Fixed-point arithmetic (though 8-bit and 16-bit arithmetic should work
+  with GCC v15+)
+- Arithmetic involving 64-bit computations
+- Named address-spaces like \c #__flash
 
 <small>Back to \ref faq_index.</small>
 
@@ -1288,7 +1318,7 @@ TIFR = _BV(TOV0);
 Some devices support a Compact Vector Table:
 
 - Devices from the 0-series, 1-series, 2-series
-- AVR16, AVR32, AVR64, AVR128 devices
+- AVR-Dx and AVR-Ex devices
 
 A CVT consists of only four vectors: 0=Reset, 1=NMI, 2=Prio1 IRQ, 3=Prio0 IRQs.
 The easiest way is to link and compile with
@@ -1946,8 +1976,10 @@ the \c __need_size_t macro is defined in line 84 of that file.
 
 \section faq_isr_names What ISR names are available for my device?
 
-The HTML documentation comes with an exhaustive
-\ref avr_signames "table of vector names". In order to get a vector
+The HTML documentation comes with exhaustive
+\ref avr_signames "Vector &rarr; AVRs" and
+\ref avr_mcu_signames "AVR &rarr; Vectors" tables.
+In order to get a vector
 number for the \c ISR_N macro, just append \c _num to the vector
 name as used with \c ISR.  For example use \c ISR_N(ADC0_vect_num)
 instead of ISR(ADC0_vect).

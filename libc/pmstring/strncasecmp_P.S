@@ -27,8 +27,6 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 /*
    strncasecmp_P.S
    Case insensitive compare
@@ -41,7 +39,7 @@
 
 #if !defined(__DOXYGEN__)
 
-#include "macros.inc"
+#include "asmdef.h"
 
 #define s1_hi r25
 #define s1_lo r24
@@ -54,10 +52,7 @@
 #define ret_hi r25
 #define ret_lo r24
 
-	ASSEMBLY_CLIB_SECTION
-	.global	_U(strncasecmp_P)
-	.type	_U(strncasecmp_P), @function
-_U(strncasecmp_P):
+ENTRY  _U(strncasecmp_P)
 	X_movw	ZL, s2_lo
 	X_movw	XL, s1_lo
 
@@ -88,7 +83,7 @@ _U(strncasecmp_P):
 5:	sub	ret_lo, ret_lo		; length limit, return 0
 	rjmp	4b
 
-	.size	_U(strncasecmp_P), . - _U(strncasecmp_P)
+ENDFUNC
 
 #endif /* not __DOXYGEN__ */
 

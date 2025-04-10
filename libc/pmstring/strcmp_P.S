@@ -26,28 +26,22 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 #if !defined(__AVR_TINY__)
 
 #if !defined(__DOXYGEN__)
 
-#include "macros.inc"
+#include "asmdef.h"
 
 #define s1_hi r25
 #define s1_lo r24
 #define s2_hi r23
 #define s2_lo r22
 
-	ASSEMBLY_CLIB_SECTION
-	.global	_U(strcmp_P)
-	.type	_U(strcmp_P), @function
-_U(strcmp_P):
+ENTRY _U(strcmp_P)
 	X_movw	ZL, s2_lo
 	X_movw	XL, s1_lo
 	XJMP	_U(__strcmp_P)
-
-	.size	_U(strcmp_P), . - _U(strcmp_P)
+ENDFUNC
 
 #endif /* not __DOXYGEN__ */
 

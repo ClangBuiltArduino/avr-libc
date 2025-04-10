@@ -25,17 +25,13 @@
   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-  POSSIBILITY OF SUCH DAMAGE.
-
- */
-
-/* $Id$ */
+  POSSIBILITY OF SUCH DAMAGE. */
 
 #if !defined(__AVR_TINY__)
 
 #if !defined(__DOXYGEN__)
 
-#include "macros.inc"
+#include "asmdef.h"
 
 #define strp_lo	r24
 #define dlm_lo	r22
@@ -44,10 +40,7 @@
 
 #define ret_lo	r24
 
-	ASSEMBLY_CLIB_SECTION
-	.global _U(strsep_P)
-	.type	_U(strsep_P),@function
-_U(strsep_P):
+ENTRY _U(strsep_P)
   ; check a NULL pointer
 	X_movw	ZL, strp_lo
 	ld	XL, Z			; str address
@@ -79,7 +72,7 @@ _U(strsep_P):
 5:	X_movw	ret_lo, str_lo		; return original address
 	ret
 
-	.size	_U(strsep_P), . - _U(strsep_P)
+ENDFUNC
 #endif /* not __DOXYGEN__ */
 
 #endif /* !defined(__AVR_TINY__) */

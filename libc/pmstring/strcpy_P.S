@@ -26,29 +26,24 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 #if !defined(__AVR_TINY__)
 
 #if !defined(__DOXYGEN__)
 
-#include "macros.inc"
+#include "asmdef.h"
 
 #define dest_hi r25
 #define dest_lo r24
 #define src_hi r23
 #define src_lo r22
 
-	ASSEMBLY_CLIB_SECTION
-	.global	_U(strcpy_P)
-	.type	_U(strcpy_P), @function
-_U(strcpy_P):
+ENTRY _U(strcpy_P)
 	X_movw	ZL, src_lo
 	X_movw	XL, dest_lo
 	XJMP	_U(__strcpy_P)
 ; return dest (unchanged)
 
-	.size	_U(strcpy_P), . - _U(strcpy_P)
+ENDFUNC
 
 #endif /* not __DOXYGEN__ */
 

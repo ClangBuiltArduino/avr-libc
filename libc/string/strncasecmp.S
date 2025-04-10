@@ -27,8 +27,6 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 /*
    strncasecmp.S
    Case insensitive compare
@@ -39,7 +37,7 @@
 
 #if !defined(__DOXYGEN__)
 
-#include "macros.inc"
+#include "asmdef.h"
 
 TINY_WEAK_ALIAS _U(strncasecmp_P) _U(strncasecmp)
 
@@ -54,11 +52,7 @@ TINY_WEAK_ALIAS _U(strncasecmp_P) _U(strncasecmp)
 #define ret_hi	r25
 #define ret_lo	r24
 
-	ASSEMBLY_CLIB_SECTION
-	.global	_U(strncasecmp)
-	.type	_U(strncasecmp), @function
-
-_U(strncasecmp):
+ENTRY _U(strncasecmp)
 	X_movw	ZL, s2_lo
 	X_movw	XL, s1_lo
 
@@ -89,6 +83,6 @@ _U(strncasecmp):
 5:	sub	ret_lo, ret_lo		; length limit, return 0
 	rjmp	4b
 
-	.size	_U(strncasecmp), . - _U(strncasecmp)
+ENDFUNC
 
 #endif /* not __DOXYGEN__ */

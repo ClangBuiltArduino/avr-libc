@@ -1,5 +1,3 @@
-# $Id$
-
 # @configure_input@
 
 # Doxygen configuration file for the AVR-LibC project.
@@ -764,6 +762,7 @@ INPUT                  = @top_srcdir@/include/alloca.h \
                          @top_srcdir@/include/stdint.h \
                          @top_srcdir@/include/stdio.h \
                          @top_srcdir@/include/stdlib.h \
+                         @top_srcdir@/include/stdfix-avrlibc.h \
                          @top_srcdir@/include/string.h \
                          @top_srcdir@/include/time.h \
                          @top_srcdir@/libc \
@@ -790,6 +789,7 @@ INPUT                  = @top_srcdir@/include/alloca.h \
                          @top_srcdir@/include/avr/xmega.h \
                          @top_srcdir@/include/avr/wdt.h \
                          @top_builddir@/include/util/delay.h \
+                         @top_srcdir@/include/util/ram-usage.h \
                          @top_srcdir@/include/util \
                          @top_srcdir@/include/compat \
                          @top_srcdir@/doc/api/overview.dox \

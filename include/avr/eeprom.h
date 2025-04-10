@@ -30,8 +30,6 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 #ifndef _AVR_EEPROM_H_
 #define _AVR_EEPROM_H_ 1
 
@@ -50,6 +48,7 @@
 #include <stddef.h>	/* size_t */
 #include <stdint.h>
 
+/** \file */
 /** \defgroup avr_eeprom <avr/eeprom.h>: EEPROM handling
     \code #include <avr/eeprom.h> \endcode
 

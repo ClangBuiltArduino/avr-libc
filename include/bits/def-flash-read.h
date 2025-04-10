@@ -1,4 +1,4 @@
-/* Copyright (c) 2002, Marek Michalkiewicz
+/* Copyright (c) 2025  Georg-Johann Lay
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -26,13 +26,23 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-#ifndef _GAS_AVA_INC
-#define _GAS_AVA_INC
+#ifndef __BITS_DEF_FLASH_READ_H_
+#define __BITS_DEF_FLASH_READ_H_
 
-#  include "ctoasm.inc"
-/* #  define TEXT_SEG(subs, func) .section .text.##subs, "ax", @progbits ; func */
-#  define GLOBAL(x) _U(x): .global _U(x)
-#  define FUNCTION(x) .func _U(x)
-#  define ENDFUNC .endfunc
+#define _Avrlibc_Def_F_4(Name, Typ)                 \
+  static __ATTR_ALWAYS_INLINE__                     \
+  Typ flash_read_##Name (const __flash Typ *__addr) \
+  {                                                 \
+    return *__addr;                                 \
+  }
 
-#endif  /* _GAS_AVA_INC  */
+#define _Avrlibc_Def_F_8(Name, Typ)                 \
+  static __ATTR_ALWAYS_INLINE__                     \
+  Typ flash_read_##Name (const __flash Typ *__addr) \
+  {                                                 \
+    Typ __res;                                      \
+    __LPM__8 (__res, __addr);                       \
+    return __res;                                   \
+  }
+
+#endif /* __BITS_DEF_FLASH_READ_H_ */

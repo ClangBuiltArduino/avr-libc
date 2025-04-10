@@ -23,8 +23,6 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 /** \page mem_sections Memory Sections
 
 Section are used to organize code and data of a program on
@@ -620,6 +618,13 @@ empty ones, that are valid in a section name.
 	 ><code>-mcvt</code></a>).
     <td>AVR-LibC
     <td>\c __init_cvt<sup>v2.3</sup>
+  </tr>
+  <tr>
+    <td><tt>.init3</tt>
+    <td>Paints the RAM from #__heap_start up to RAMEND in
+      preparation for _get_ram_unused().
+    <td>AVR-LibC
+    <td>\c __init_ram_color<sup>v2.3</sup>
   </tr>
   <tr>
     <td><tt>.init4</tt>

@@ -26,11 +26,9 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 #ifndef	__DOXYGEN__
 
-#include "macros.inc"
+#include "asmdef.h"
 
 TINY_WEAK_ALIAS _U(strpbrk_P) _U(strpbrk)
 
@@ -43,11 +41,7 @@ TINY_WEAK_ALIAS _U(strpbrk_P) _U(strpbrk)
 /* This realization is compact, but is not very fast: an accept string
    is not cashed.	*/
 
-	ASSEMBLY_CLIB_SECTION
-	.global _U(strpbrk)
-	.type   _U(strpbrk), @function
-
-_U(strpbrk):
+ENTRY _U(strpbrk)
 	X_movw	XL, str_lo
 	clr	ret_hi		; a trick to save 1 word
   ; get next symbol from s[]
@@ -70,6 +64,6 @@ _U(strpbrk):
 	X_movw	ret_lo, XL
 3:	ret
 
-	.size _U(strpbrk), . - _U(strpbrk)
+ENDFUNC
 
 #endif	/* !__DOXYGEN__ */

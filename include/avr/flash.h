@@ -31,10 +31,7 @@
   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-  POSSIBILITY OF SUCH DAMAGE.
-
-  $Id$
-*/
+  POSSIBILITY OF SUCH DAMAGE. */
 
 #ifndef _AVR_FLASH_H_
 #define _AVR_FLASH_H_
@@ -272,7 +269,7 @@ cat is a rat? no!
     For example code and usage, see the #FLIT macro.  */
 #define FXLIT(str) ((const __flashx char[]) { str })
 
-/** \name Functions from string.h, but one argument is in addrsss-space __flash */
+/** \name Functions from string.h, but one argument is in address-space __flash */
 
 /** \ingroup avr_flash
     \fn const __flash void * memchr_F(const __flash void *s, int val, size_t len)
@@ -674,7 +671,7 @@ extern char *strtok_F(char *s, const __flash char * delim);
 extern char *strtok_rF(char *s, const __flash char * delim, char **last);
 
 
-/** \name Functions from string.h, but one argument is in 24-bit addrsss-space __flashx */
+/** \name Functions from string.h, but one argument is in 24-bit address-space __flashx */
 
 /** \ingroup avr_flash
     \fn void *memcpy_FX(void *dest, const __flashx void *src, size_t n)
@@ -1381,23 +1378,8 @@ extern size_t strlen_FX(const __flashx char*) __asm("strlen_PF") __ATTR_CONST__;
 #ifdef __FLASH
 
 #include <stdint.h>
-#include <avr/lpm-elpm.h>
-
-#define _Avrlibc_Def_F_4(Name, Typ)                 \
-  static __ATTR_ALWAYS_INLINE__                     \
-  Typ flash_read_##Name (const __flash Typ *__addr) \
-  {                                                 \
-    return *__addr;                                 \
-  }
-
-#define _Avrlibc_Def_F_8(Name, Typ)                 \
-  static __ATTR_ALWAYS_INLINE__                     \
-  Typ flash_read_##Name (const __flash Typ *__addr) \
-  {                                                 \
-    Typ __res;                                      \
-    __LPM__8 (__res, __addr);                       \
-    return __res;                                   \
-  }
+#include <bits/lpm-elpm.h>
+#include <bits/def-flash-read.h>
 
 #if __SIZEOF_LONG_LONG__ == 8
 _Avrlibc_Def_F_8 (u64, uint64_t)
@@ -1420,8 +1402,7 @@ _Avrlibc_Def_F_4 (long_double, long double)
 
 #ifdef __FLASHX
 
-#include <avr/lpm-elpm.h>
-#include <avr/io.h> /* RAMPZ */
+#include <bits/lpm-elpm.h>
 
 #if defined(__AVR_HAVE_ELPM__)
 #define __ELPM__8fx(r,a,T) __ELPM__8(r,a,T)

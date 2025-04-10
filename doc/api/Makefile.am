@@ -25,11 +25,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # Author: Theodore A. Roth <troth@verinet.com>
-#
-# Contributors:
-#
-# $Id$
-#
+
 MAINTAINERCLEANFILES = Makefile.in stamp-vti
 
 CLEANFILES           = *.html *.pdf *.ma *.mas \
@@ -38,6 +34,7 @@ CLEANFILES           = *.html *.pdf *.ma *.mas \
                        doxygen.config main_page.dox doxygen-pdf.config
 
 EXTRA_DIST           = dox.css dox_html_header dox_html_footer \
+                       dox_latex_header.tex \
                        doxygen.config.in \
                        main_page.dox.in \
                        assembler.dox \
@@ -46,6 +43,7 @@ EXTRA_DIST           = dox.css dox_html_header dox_html_footer \
                        acknowledge.dox \
                        malloc.dox \
                        $(IMAGE_SRC) \
+                       avr-libc-logo-large.png \
                        sections.dox \
                        sfr.dox \
                        tools-install.dox \
@@ -60,6 +58,7 @@ EXTRA_DIST           = dox.css dox_html_header dox_html_footer \
                        overview.dox \
                        pgmspace.dox \
                        library.dox \
+                       filter-dox.sh \
                        gen-vectortable-dox.sh \
                        isrs-to-dox.py \
                        mcus-to-isrs.sh \

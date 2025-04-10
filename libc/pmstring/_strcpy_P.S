@@ -26,26 +26,20 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 #if !defined(__AVR_TINY__)
 
 #if !defined(__DOXYGEN__)
 
-#include "macros.inc"
+#include "asmdef.h"
 
-	ASSEMBLY_CLIB_SECTION
-	.global	_U(__strcpy_P)
-	.type	_U(__strcpy_P), @function
-_U(__strcpy_P):
+ENTRY _U(__strcpy_P)
 .Loop:
 	X_lpm	r0, Z+
 	st	X+, r0
 	tst	r0
 	brne	.Loop
 	ret
-
-	.size	_U(__strcpy_P), . - _U(__strcpy_P)
+ENDFUNC
 
 #endif /* ! __DOXYGEN__ */
 

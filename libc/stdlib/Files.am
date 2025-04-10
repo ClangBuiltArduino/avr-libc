@@ -25,9 +25,6 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-# $Id$
-#
 
 stdlib_a_c_sources = \
 	abs.c \
@@ -75,12 +72,8 @@ stdlib_a_asm_sources = \
 	isspace.S \
 	isblank.S \
 	ispunct.S \
-	lrdivi.S \
-	rdivi.S \
 	tolower.S \
-	toupper.S \
-	ulrdivi.S \
-	urdivi.S
+	toupper.S
 
 stdlib_a_extra_dist = \
 	ctype.S \
@@ -89,5 +82,8 @@ stdlib_a_extra_dist = \
 	atol.c
 
 malloc.o: AVRLIB_CFLAGS += -Wno-maybe-uninitialized
+
+dtoa_prf.o dtostre.o strtod.o: AVRLIB_CFLAGS += -mcall-prologues
+
 
 # vim: set ft=make:

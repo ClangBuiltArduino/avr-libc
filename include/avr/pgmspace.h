@@ -28,8 +28,6 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 /*
    pgmspace.h
 
@@ -91,7 +89,7 @@
 #ifndef __DOXYGEN__
 
 #include <bits/attribs.h>
-#include <avr/lpm-elpm.h>
+#include <bits/lpm-elpm.h>
 
 #define PROGMEM __ATTR_PROGMEM__
 
@@ -320,50 +318,7 @@ static inline long double pgm_read_long_double (const long double *addr);
 
 #else /* !DOXYGEN */
 
-#define _Avrlibc_Def_Pgm_1(Name, Typ)           \
-  static __ATTR_ALWAYS_INLINE__                 \
-  Typ pgm_read_##Name (const Typ *__addr)       \
-  {                                             \
-    Typ __res;                                  \
-    __LPM__1 (__res, __addr);                   \
-    return __res;                               \
-  }
-
-#define _Avrlibc_Def_Pgm_2(Name, Typ)           \
-  static __ATTR_ALWAYS_INLINE__                 \
-  Typ pgm_read_##Name (const Typ *__addr)       \
-  {                                             \
-    Typ __res;                                  \
-    __LPM__2 (__res, __addr);                   \
-    return __res;                               \
-  }
-
-#define _Avrlibc_Def_Pgm_3(Name, Typ)           \
-  static __ATTR_ALWAYS_INLINE__                 \
-  Typ pgm_read_##Name (const Typ *__addr)       \
-  {                                             \
-    Typ __res;                                  \
-    __LPM__3 (__res, __addr);                   \
-    return __res;                               \
-  }
-
-#define _Avrlibc_Def_Pgm_4(Name, Typ)           \
-  static __ATTR_ALWAYS_INLINE__                 \
-  Typ pgm_read_##Name (const Typ *__addr)       \
-  {                                             \
-    Typ __res;                                  \
-    __LPM__4 (__res, __addr);                   \
-    return __res;                               \
-  }
-
-#define _Avrlibc_Def_Pgm_8(Name, Typ)           \
-  static __ATTR_ALWAYS_INLINE__                 \
-  Typ pgm_read_##Name (const Typ *__addr)       \
-  {                                             \
-    Typ __res;                                  \
-    __LPM__8 (__res, __addr);                   \
-    return __res;                               \
-  }
+#include <bits/def-pgm-read.h>
 
 _Avrlibc_Def_Pgm_1 (char, char)
 _Avrlibc_Def_Pgm_1 (unsigned_char, unsigned char)
@@ -632,50 +587,7 @@ static inline long double pgm_read_long_double_far (uint_farptr_t addr);
 
 #else /* !DOXYGEN */
 
-#define _Avrlibc_Def_Pgm_Far_1(Name, Typ)          \
-  static __ATTR_ALWAYS_INLINE__                    \
-  Typ pgm_read_##Name##_far (uint_farptr_t __addr) \
-  {                                                \
-    Typ __res;                                     \
-    __ELPM__1 (__res, __addr, Typ);                \
-    return __res;                                  \
-  }
-
-#define _Avrlibc_Def_Pgm_Far_2(Name, Typ)          \
-  static __ATTR_ALWAYS_INLINE__                    \
-  Typ pgm_read_##Name##_far (uint_farptr_t __addr) \
-  {                                                \
-    Typ __res;                                     \
-    __ELPM__2 (__res, __addr, Typ);                \
-    return __res;                                  \
-  }
-
-#define _Avrlibc_Def_Pgm_Far_3(Name, Typ)          \
-  static __ATTR_ALWAYS_INLINE__                    \
-  Typ pgm_read_##Name##_far (uint_farptr_t __addr) \
-  {                                                \
-    Typ __res;                                     \
-    __ELPM__3 (__res, __addr, Typ);                \
-    return __res;                                  \
-  }
-
-#define _Avrlibc_Def_Pgm_Far_4(Name, Typ)          \
-  static __ATTR_ALWAYS_INLINE__                    \
-  Typ pgm_read_##Name##_far (uint_farptr_t __addr) \
-  {                                                \
-    Typ __res;                                     \
-    __ELPM__4 (__res, __addr, Typ);                \
-    return __res;                                  \
-  }
-
-#define _Avrlibc_Def_Pgm_Far_8(Name, Typ)          \
-  static __ATTR_ALWAYS_INLINE__                    \
-  Typ pgm_read_##Name##_far (uint_farptr_t __addr) \
-  {                                                \
-    Typ __res;                                     \
-    __ELPM__8 (__res, __addr, Typ);                \
-    return __res;                                  \
-  }
+#include <bits/def-pgm-read-far.h>
 
 _Avrlibc_Def_Pgm_Far_1 (char, char)
 _Avrlibc_Def_Pgm_Far_1 (unsigned_char, unsigned char)

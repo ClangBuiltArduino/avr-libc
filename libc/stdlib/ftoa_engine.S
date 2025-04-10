@@ -26,13 +26,11 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 #if !defined(__AVR_TINY__)
 
 #ifndef	__DOXYGEN__
 
-#include "macros.inc"
+#include "asmdef.h"
 #include "ftoa_engine.h"
 
 #if defined(__AVR_HAVE_ELPM__) && !defined(__AVR_HAVE_ELPMX__)
@@ -120,7 +118,7 @@
 	adiw	r30, 1
 	brcc .Lnoinc.\@
 	inc	Z_HH8
-	out	AVR_RAMPZ_ADDR, Z_HH8
+	out	RAMPZ_IO_ADDR, Z_HH8
 .Lnoinc.\@:
 	.ifc \reg,r0
 	.else
@@ -148,11 +146,7 @@
 .endm
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-    ASSEMBLY_CLIB_SECTION
-
-    .global	__ftoa_engine
-    .type	__ftoa_engine, "function"
-__ftoa_engine:
+ENTRY __ftoa_engine
 
 /* --------------------------------------------------------------------
    Float value parse.
@@ -242,7 +236,7 @@ __ftoa_engine:
 #ifdef __AVR_HAVE_ELPM__
 	clr	val_hhi
 	sbci	val_hhi, hh8(-(.L_base10))
-	out	AVR_RAMPZ_ADDR, val_hhi
+	out	RAMPZ_IO_ADDR, val_hhi
 #ifdef Z_HH8
 	mov	Z_HH8, val_hhi
 #endif
@@ -378,7 +372,7 @@ __ftoa_engine:
   ; to find first digit
 #ifdef __AVR_HAVE_ELPM__
 	ldi	ZL, hh8(.L_powr10)
-	out	AVR_RAMPZ_ADDR, ZL
+	out	RAMPZ_IO_ADDR, ZL
 #ifdef Z_HH8
 	mov	Z_HH8, ZL
 #endif
@@ -498,7 +492,7 @@ __ftoa_engine:
 .L_rest:
 	clr	zero
 #ifdef __AVR_HAVE_RAMPD__
-	out AVR_RAMPZ_ADDR, zero
+	out RAMPZ_IO_ADDR, zero
 #endif
 	POP_ZHH8
 	pop	r14
@@ -513,7 +507,7 @@ __ftoa_engine:
 	com	r25
 	ret
 
-    .size  __ftoa_engine, . - __ftoa_engine
+ENDFUNC
 
 /* --------------------------------------------------------------------
     Tables.  '.L_powr10' is placed first -- for subnormals stability.

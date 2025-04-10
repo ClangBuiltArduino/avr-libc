@@ -26,25 +26,21 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 
 
 #if !defined(__AVR_TINY__)
 
 #if !defined(__DOXYGEN__)
 
-#include "macros.inc"
+#include "asmdef.h"
 
 #define len_hi r21
 #define len_lo r20
 
-	ASSEMBLY_CLIB_SECTION
-	.global	_U(__memcpy_P)
-	.type	_U(__memcpy_P), @function
-.L_memcpy_P_begin:
+FUNCTION .L_memcpy_P_begin
+
 #if OPTIMIZE_SPEED
-_U(__memcpy_P):
+ENTRY _U(__memcpy_P)
 	sbrs	len_lo, 0
 	rjmp	.L_memcpy_P_even
 	rjmp	.L_memcpy_P_odd
@@ -61,14 +57,14 @@ _U(__memcpy_P):
 .Loop:
 	X_lpm	r0, Z+
 	st	X+, r0
-_U(__memcpy_P):
+ENTRY _U(__memcpy_P)
 	subi	len_lo, lo8(1)
 	sbci	len_hi, hi8(1)
 #endif
 	brcc	.Loop
 	ret
 
-	.size	_U(__memcpy_P), . - .L_memcpy_P_begin
+ENDFUNC
 
 #endif /* not __DOXYGEN__ */
 

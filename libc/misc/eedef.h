@@ -26,8 +26,6 @@
    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
    POSSIBILITY OF SUCH DAMAGE.	*/
 
-/* $Id$	*/
-
 #ifndef	_EEDEF_H_
 #define _EEDEF_H_  1
 
@@ -70,7 +68,7 @@
          /* AVR-Ex family
           * value of NVMCTRL_CMD_enum.NVMCTRL_CMD_EEPERW_gc */
 #        define NVMCTRL_CMD_PAGEERASEWRITE_gc (0x15<<0)
-#      elif defined (__AVR_Dx__)
+#      elif defined (__AVR_Dx__) || defined (__AVR_SD__)
          /* AVR-Dx family
           * value of NVMCTRL_CMD_enum.NVMCTRL_CMD_EEERWR_gc */
 #        define NVMCTRL_CMD_PAGEERASEWRITE_gc (0x13<<0)

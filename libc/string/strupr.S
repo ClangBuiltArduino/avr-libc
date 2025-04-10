@@ -27,8 +27,6 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 /*
    strupr.S
    Convert a string to upper case
@@ -39,17 +37,13 @@
 
 #if !defined(__DOXYGEN__)
 
-#include "macros.inc"
+#include "asmdef.h"
 
 #define str_hi r25
 #define str_lo r24
 #define temp   r22
 
-	ASSEMBLY_CLIB_SECTION
-	.global	_U(strupr)
-	.type	_U(strupr), @function
-
-_U(strupr):
+ENTRY _U(strupr)
 	X_movw	XL, str_lo
 
 1:	ld	temp, X
@@ -62,6 +56,6 @@ _U(strupr):
 	brne	1b		; Z for temp
 	ret
 
-	.size	_U(strupr), . - _U(strupr)
+ENDFUNC
 
 #endif /* not __DOXYGEN__ */

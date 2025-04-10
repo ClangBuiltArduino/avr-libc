@@ -26,23 +26,20 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id$ */
-
 #if !defined(__AVR_TINY__)
 
 #if !defined(__DOXYGEN__)
 
-#include "macros.inc"
+#include "asmdef.h"
 
 #define src_hi r25
 #define src_lo r24
 
 ; 11 words, (14 + strlen_P(src) * 8) cycles
 
-	ASSEMBLY_CLIB_SECTION
-	.global	_U(strlen_P)
-	.type	_U(strlen_P), @function
-_U(strlen_P):
+ENTRY _U(strlen_P)
+;;; For backwards compatibility: Used by avr-gcc's __builtin_avr_strlen_flash.
+ENTRY _U(__strlen_P)
 	X_movw	ZL, src_lo
 .L_strlen_P_loop:
 	X_lpm	r0, Z+
@@ -54,8 +51,7 @@ _U(strlen_P):
 	add	src_lo, ZL
 	adc	src_hi, ZH
 	ret
-
-	.size	_U(strlen_P), . - _U(strlen_P)
+ENDFUNC
 
 #endif /* not __DOXYGEN__ */
 

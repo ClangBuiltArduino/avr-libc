@@ -25,15 +25,13 @@
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * $Id$
- */
+ * SUCH DAMAGE. */
 
 #include <limits.h>
 #include <ctype.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "sectionname.h"
 
 /*
@@ -44,7 +42,7 @@
  */
 ATTRIBUTE_CLIB_SECTION
 long
-strtol(const char *nptr, char **endptr, register int base)
+strtol(const char *nptr, char **endptr, register int ibase)
 {
 	register unsigned long acc;
 	register unsigned char c;
@@ -56,8 +54,9 @@ strtol(const char *nptr, char **endptr, register int base)
 
 	if (endptr)
 		*endptr = (char *)nptr;
-	if (base != 0 && (base < 2 || base > 36))
+	if (ibase != 0 && (ibase < 2 || ibase > 36))
 		return 0;
+	uint8_t base = (uint8_t) ibase;
 
 	/*
 	 * Skip white space and pick up leading +/- sign if any.
@@ -146,7 +145,12 @@ strtol(const char *nptr, char **endptr, register int base)
 			any = -1;
 			continue;
 		}
+#ifdef __AVR_HAVE_MUL__
+		extern uint32_t __mulsi_u8 (uint32_t, uint8_t);
+		acc = __mulsi_u8 (acc, base) + c;
+#else
 		acc = acc * base + c;
+#endif
 		if (acc > (unsigned long)LONG_MAX + 1)
 			any = -1;
 		else
