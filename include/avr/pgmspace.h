@@ -94,7 +94,7 @@
 
 #ifndef __ATTR_PROGMEM__
 #if (__clang__)
-#define __ATTR_PROGMEM__  __attribute__((section(".progmem1.data")))
+#define __ATTR_PROGMEM__  __attribute__((section(".progmem.data")))
 #else
 #define __ATTR_PROGMEM__ __attribute__((__progmem__))
 #endif
