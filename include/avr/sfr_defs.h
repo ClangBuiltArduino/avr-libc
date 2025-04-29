@@ -153,8 +153,6 @@
 #define _SFR_IO16(io_addr) ((io_addr) + __SFR_OFFSET)
 
 #define _SFR_IO_ADDR(sfr) ((sfr) - __SFR_OFFSET)
-#define _SFR_IO_ADDR_OR_ZERO(sfr) \
-        (_SFR_IO_REG_P(sfr) ? ((sfr) - __SFR_OFFSET) : 0)
 #define _SFR_MEM_ADDR(sfr) (sfr)
 #define _SFR_IO_REG_P(sfr) ((sfr) < 0x40 + __SFR_OFFSET)
 
@@ -183,8 +181,6 @@
 
 #define _SFR_MEM_ADDR(sfr) ((uint16_t) &(sfr))
 #define _SFR_IO_ADDR(sfr) (_SFR_MEM_ADDR(sfr) - __SFR_OFFSET)
-#define _SFR_IO_ADDR_OR_ZERO(sfr) \
-        (_SFR_IO_REG_P(sfr) ? (_SFR_MEM_ADDR(sfr) - __SFR_OFFSET) : 0)
 #define _SFR_IO_REG_P(sfr) (_SFR_MEM_ADDR(sfr) < 0x40 + __SFR_OFFSET)
 
 #define _SFR_ADDR(sfr) _SFR_MEM_ADDR(sfr)
