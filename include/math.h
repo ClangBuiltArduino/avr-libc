@@ -1,4 +1,5 @@
 /* Copyright (c) 2002,2007-2009 Michael Stumpf
+   Copyright (c) 2023-2025  Georg-Johann Lay
 
    Portions of documentation Copyright (c) 1990 - 1994
    The Regents of the University of California.
@@ -62,7 +63,7 @@ extern "C" {
       \c errno variable. Therefore the majority of them are declared
       with \c const attribute, for better optimization by GCC.
     - 64-bit floating-point arithmetic is only available in
-      <a href="https://gcc.gnu.org/gcc-10/changes.html#avr">avr-gcc v10</a>
+      <a href="https://gcc.gnu.org/gcc-10/changes.html#avr">GCC v10</a>
       and up.
       The size of the \c double and \c long \c double type can be selected
       at compile-time with options like <tt>-mdouble=64</tt> and
@@ -77,6 +78,9 @@ extern "C" {
       in avr-gcc v4.6 and older it is usually
       also required to link with \c -lm. In avr-gcc v4.7 and up, \c -lm
       is added automatically to all linker invocations.
+
+  See also sone benchmarks for \ref bench_libm "IEEE single"
+  and \ref bench_libf7 "IEEE double".
 */
 
 
@@ -98,22 +102,22 @@ extern "C" {
 /** The constant natural logarithm of 10.	*/
 #define M_LN10		2.30258509299404568402
 
-/** The constant \a pi.	*/
+/** The constant &pi;.	*/
 #define M_PI		3.14159265358979323846
 
-/** The constant \a pi/2.	*/
+/** The constant &pi;/2.	*/
 #define M_PI_2		1.57079632679489661923
 
-/** The constant \a pi/4.	*/
+/** The constant &pi;/4.	*/
 #define M_PI_4		0.78539816339744830962
 
-/** The constant \a 1/pi.	*/
+/** The constant 1/&pi;.	*/
 #define M_1_PI		0.31830988618379067154
 
-/** The constant \a 2/pi.	*/
+/** The constant 2/&pi;.	*/
 #define M_2_PI		0.63661977236758134308
 
-/** The constant \a 2/sqrt(pi).	*/
+/** The constant 2/sqrt(&pi;).	*/
 #define M_2_SQRTPI	1.12837916709551257390
 
 /** The square root of 2.	*/
@@ -127,7 +131,7 @@ extern "C" {
 
 /** The \c float representation of a constant quiet NaN.
     \p __tag is a string constant like \c "" or \c "123". */
-#define nanf(__tagp)	__builtin_nanf(__tag)
+#define nanf(__tag)	__builtin_nanf(__tag)
 
 /** The \c double representation of a constant quiet NaN.
     \p __tag is a string constant like \c "" or \c "123". */
@@ -137,8 +141,8 @@ extern "C" {
     \p __tag is a string constant like \c "" or \c "123". */
 #define nanl(__tag)	__builtin_nanl(__tag)
 
-/** \c double infinity constant.	*/
-#define INFINITY __builtin_inf()
+/** \c float infinity constant.	*/
+#define INFINITY __builtin_inff()
 
 /** \c float infinity constant.	*/
 #define HUGE_VALF __builtin_huge_valf()
@@ -173,19 +177,22 @@ __ATTR_CONST__ extern double tan (double x);
 __ATTR_CONST__ extern long double tanl (long double x);
 
 /** The fabsf() function computes the absolute value of a floating-point number \a x. */
-static __ATTR_ALWAYS_INLINE__ float fabsf (float __x)
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+float fabsf (float __x)
 {
     return __builtin_fabsf (__x);
 }
 
 /** The fabs() function computes the absolute value of a floating-point number \a x. */
-static __ATTR_ALWAYS_INLINE__ double fabs (double __x)
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+double fabs (double __x)
 {
     return __builtin_fabs (__x);
 }
 
 /** The fabsl() function computes the absolute value of a floating-point number \a x. */
-static __ATTR_ALWAYS_INLINE__ long double fabsl (long double __x)
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+long double fabsl (long double __x)
 {
     return __builtin_fabsl (__x);
 }
@@ -359,66 +366,82 @@ __ATTR_CONST__ extern double tanh (double x);
 __ATTR_CONST__ extern long double tanhl (long double x);
 
 /** The acosf() function computes the principal value of the arc cosine of
-    \a x.  The returned value is in the range [0, pi] radians. A domain
-    error occurs for arguments not in the range [&minus;1, +1]. */
+    \a x.  The returned value is in the range [0, &pi;] radians. A domain
+    error occurs for arguments not in the range [&minus;1, +1].
+    The relative error is bounded by 1.9&middot;10<sup>&minus;7</sup>. */
 __ATTR_CONST__ extern float acosf (float x);
 /** The acos() function computes the principal value of the arc cosine of
-    \a x.  The returned value is in the range [0, pi] radians or NaN. */
+    \a x.  The returned value is in the range [0, &pi;] radians or NaN. */
 __ATTR_CONST__ extern double acos (double x);
 /** The acosl() function computes the principal value of the arc cosine of
-    \a x.  The returned value is in the range [0, pi] radians or NaN. */
+    \a x.  The returned value is in the range [0, &pi;] radians or NaN. */
 __ATTR_CONST__ extern long double acosl (long double x);
 
 /** The asinf() function computes the principal value of the arc sine of
-    \a x.  The returned value is in the range [&minus;pi/2, pi/2] radians. A
-    domain error occurs for arguments not in the range [&minus;1, +1]. */
+    \a x.  The returned value is in the range [&minus;&pi;/2, &pi;/2] radians. A
+    domain error occurs for arguments not in the range [&minus;1, +1].
+    The relative error is bounded by 3.3&middot;10<sup>&minus;7</sup>. */
 __ATTR_CONST__ extern float asinf (float x);
 /** The asin() function computes the principal value of the arc sine of
-    \a x.  The returned value is in the range [&minus;pi/2, pi/2] radians or NaN. */
+    \a x.  The returned value is in the range [&minus;&pi;/2, &pi;/2] radians or NaN. */
 __ATTR_CONST__ extern double asin (double x);
 /** The asinl() function computes the principal value of the arc sine of
-    \a x.  The returned value is in the range [&minus;pi/2, pi/2] radians or NaN. */
+    \a x.  The returned value is in the range [&minus;&pi;/2, &pi;/2] radians or NaN. */
 __ATTR_CONST__ extern long double asinl (long double x);
 
 /** The atanf() function computes the principal value of the arc tangent
-    of \a x.  The returned value is in the range [&minus;pi/2, pi/2] radians. */
+    of \a x.  The returned value is in the range [&minus;&pi;/2, &pi;/2] radians.
+    The relative error is bounded by 1.3&middot;10<sup>&minus;7</sup>. */
 __ATTR_CONST__ extern float atanf (float x);
 /** The atan() function computes the principal value of the arc tangent
-    of \a x.  The returned value is in the range [&minus;pi/2, pi/2] radians. */
+    of \a x.  The returned value is in the range [&minus;&pi;/2, &pi;/2] radians. */
 __ATTR_CONST__ extern double atan (double x);
 /** The atanl() function computes the principal value of the arc tangent
-    of \a x.  The returned value is in the range [&minus;pi/2, pi/2] radians. */
+    of \a x.  The returned value is in the range [&minus;&pi;/2, &pi;/2] radians. */
 __ATTR_CONST__ extern long double atanl (long double x);
 
 /** The atan2f() function computes the principal value of the arc tangent
     of <em>y / x</em>, using the signs of both arguments to determine
     the quadrant of the return value.  The returned value is in the range
-    [&minus;pi, +pi] radians. */
+    [&minus;&pi;, +&pi;] radians. */
 __ATTR_CONST__ extern float atan2f (float y, float x);
 /** The atan2() function computes the principal value of the arc tangent
     of <em>y / x</em>, using the signs of both arguments to determine
     the quadrant of the return value.  The returned value is in the range
-    [&minus;pi, +pi] radians. */
+    [&minus;&pi;, +&pi;] radians. */
 __ATTR_CONST__ extern double atan2 (double y, double x);
 /** The atan2l() function computes the principal value of the arc tangent
     of <em>y / x</em>, using the signs of both arguments to determine
     the quadrant of the return value.  The returned value is in the range
-    [&minus;pi, +pi] radians. */
+    [&minus;&pi;, +&pi;] radians. */
 __ATTR_CONST__ extern long double atan2l (long double y, long double x);
 
-/** The logf() function returns the natural logarithm of argument \a x. */
+/** The logf() function returns the natural logarithm of argument \a x.
+    The relative error is bounded by 2.3&middot;10<sup>&minus;7</sup>. */
 __ATTR_CONST__ extern float logf (float x);
 /** The log() function returns the natural logarithm of argument \a x. */
 __ATTR_CONST__ extern double log (double x);
 /** The logl() function returns the natural logarithm of argument \a x. */
 __ATTR_CONST__ extern long double logl (long double x);
 
-/** The log10f() function returns the logarithm of argument \a x to base 10. */
+/** The log10f() function returns the logarithm of argument \a x to base 10.
+    The relative error is bounded by 2.8&middot;10<sup>&minus;7</sup>. */
 __ATTR_CONST__ extern float log10f (float x);
 /** The log10() function returns the logarithm of argument \a x to base 10. */
 __ATTR_CONST__ extern double log10 (double x);
 /** The log10l() function returns the logarithm of argument \a x to base 10. */
 __ATTR_CONST__ extern long double log10l (long double x);
+
+/** The log2f() function returns the logarithm of argument \a x to base 2.
+    The relative error is bounded by 1.8&middot;10<sup>&minus;7</sup>.
+    \since AVR-LibC v2.3 */
+__ATTR_CONST__ extern float log2f (float x);
+/** The log2() function returns the logarithm of argument \a x to base 2.
+    \since AVR-LibC v2.3 */
+__ATTR_CONST__ extern double log2 (double x);
+/** The log2l() function returns the logarithm of argument \a x to base 2.
+    \since AVR-LibC v2.3 */
+__ATTR_CONST__ extern long double log2l (long double x);
 
 /** The function powf() returns the value of \a x to the exponent \a y.
     \n Notice that for integer exponents, there is the more efficient
@@ -556,7 +579,8 @@ __ATTR_CONST__ extern float fdimf (float x, float y);
     \a y or both are NaN, NaN is returned. */
 __ATTR_CONST__ extern double fdim (double x, double y);
 /** The fdiml() function returns <em>max(x &minus; y, 0)</em>. If \a x or
-    \a y or both are NaN, NaN is returned. */
+    \a y or both are NaN, NaN is returned.
+    \since GCC v15.2 */
 __ATTR_CONST__ extern long double fdiml (long double x, long double y);
 
 /** The fmaf() function performs floating-point multiply-add. This is the

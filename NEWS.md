@@ -6,7 +6,7 @@
 
 - **Parts of the startup code are now optional and have been moved
   from `crt<mcu>.o` to the device support library `lib<mcu>.a`.**\
-  When a specific part of the startup code are not wanted,
+  When specific parts of the startup code are not wanted,
   a respective symbol can be defined so that the associated code
   is no more pulled in:
   - Define `__init_sp` to skip the setting of SP in `.init2` ([#1011][1011]).
@@ -35,6 +35,11 @@
 - Support has been added for the `stpcpy`, `stpcpy_P`, `stpcpy_F`,
   `stpcpy_PF`, `stpcpy_FX` functions ([#1015][1015]).
 
+- Support for the `strtoll` and `strtoull` functions has been added to
+  [<stdlib.h>](https://avrdudes.github.io/avr-libc/avr-libc-user-manual/group__avr__stdlib.html).
+  The `strtol` and `strtoul` functions have been rewritten to increase
+  performance.
+
 - Support for some non-standard functions has been added to
   [<stdlib.h>](https://avrdudes.github.io/avr-libc/avr-libc-user-manual/group__avr__stdlib.html):
    - 64-bit integer to ASCII conversions: `lltoa`, `ulltoa`, `ulltoa_base10`.
@@ -52,7 +57,8 @@
 
 - Support has been added for the fixed-point arithmetic
   functions `rdivi`, `urdivi`, `lrdivi`, `ulrdivi` ([#999][999]),
-  `sqrthr`, `sqrtuhr` ([#1024][1024]), `atanur`,
+  `sqrthr`, `sqrtuhr` ([#1024][1024]), `sqrtur`, `atank`, `atanuk`, `atanur`,
+  `acosk`, `acosuk`, `asink`, `asinuk`,
   `log2uhk`, `log2uk`, `log21puhr`, `log21pur`,
   `exp2k`, `exp2uk`, `exp2m1ur`,
   `sinpi2k`, `sinuhk_deg`, `sinpi2ur`,
@@ -98,18 +104,37 @@
 - The C/C++ register footprint of some common simple functions has
   been improved by implementing them as extern inline assembly stubs:
   `strlen`, `strlen_P`, `strcpy`, `strcpy_P`, `strcmp`, `strcmp_P`,
-  `memcpy_P` ([#1013][1013]), and the functions from
+  `memcpy_P`, `strchr`, `strchr_P` ([#1013][1013]), and the functions from
    [<ctype.h>](https://avrdudes.github.io/avr-libc/avr-libc-user-manual/group__ctype).
 
 - `common/asmdef.h` used a sub-optimal definition of XJMP and XCALL ([#993][993]).
   Outcome was a sub-optimal code generation for some devices like the
   ones in `avrxmega3/short-calls`.
 
+- Support for the floating-point functions `log2`, `log2f` and `log2l`
+  has been added to
+  [<math.h>](https://avrdudes.github.io/avr-libc/avr-libc-user-manual/group__avr__math) ([#1032][1032]).
+
+- The error of `asinf` has been improved from 8 ULPs to 3 ULPs.
+
+- The error of `logf` has been improved from 5 ULPs to 3 ULPs.
+
 - avr-gcc v15 and up issues a diagnostic for `__int24` and `__uint24` when
   `-pedantic` or similar options are on.  Hence `__extension__` was
   added when using these types in `avr/pgmspace.h`.
 
+- The [benchmark page](https://avrdudes.github.io/avr-libc/avr-libc-user-manual/benchmarks.html)
+  has been reworked.
+  It includes now fixed-point and IEEE double floating-point benchmarks.
+  The IEEE single floating-point benchmarks now include the code sizes,
+  precision data, average execution times, and (lower bounds for the)
+  worst case execution times.
+
 ## Issues closed
+
+- See also the list of
+  <a href="https://github.com/avrdudes/avr-libc/milestone/1?closed=1">
+  issues closed for v2.3</a>.
 
 - Since v2.2.0 ([#936][936]), `gcrt1.S` defines symbols `__DATA_REGION_ORIGIN__`
   and `__DATA_REGION_LENGTH__` to allow for more precise diagnostics from
@@ -127,6 +152,11 @@
 
   A similar test has been added for [PR31177](https://sourceware.org/PR31177)
   which is a similar feature for the `.text` region.
+
+- Due to several problem reports concerning the I/O headers for ATxmega64A1U
+  and ATxmega128A1U
+  ([#391][391], [#635][635], [#643][643], [#663][663], [#875][875], [#959][959], [#960][960], [#961][961]),
+  these headers have been updated to a more recent revision.
 
 - On AVRrc Reduced Tiny, add 0x4000 to the symbol address when
   `pgm_get_far_address()` takes the address of an object in `PROGMEM_FAR`.
@@ -151,10 +181,19 @@
   fixed so that they comply to POSIX.1-2008 ([#1009][1009]).
 
 - `fflush()` is now implemented as a proper (non-inline) function so that
-  features like `-wrap` will work as expected ([#1017][1017], [#1003][1003]).
+  features like `-wrap` will work as expected.  For the same reason,
+  `clearerr`(), `ferror()` and `feof()` are no more implemented as macros
+  but are proper (non-inline) functions, too. ([#1017][1017], [#1003][1003]).
 
 - Distribution is missing `dox_latex_header.tex`, `filter-dox.sh`,
   `avr-libc-logo-large.png` from `doc/api/` ([#1023][1023]).
+
+- Fixed a typo in the parameter name of `nanf` ([#1033][1033]).
+
+- `INFINITY` from `math.h` has been turned from `double` to
+  `float` ([#1036][1036]).
+
+- `XRAMEND` for ATmega128A is now defined to 0xffff ([#629][629]).
 
 ## Pull Requests
 
@@ -164,10 +203,19 @@
 
 - New news are now in `NEWS.md` and no more in [`NEWS`](NEWS).
 
+[391]: https://github.com/avrdudes/avr-libc/issues/391
 [496]: https://github.com/avrdudes/avr-libc/issues/496
+[629]: https://github.com/avrdudes/avr-libc/issues/629
+[635]: https://github.com/avrdudes/avr-libc/issues/635
+[643]: https://github.com/avrdudes/avr-libc/issues/643
+[663]: https://github.com/avrdudes/avr-libc/issues/663
 [765]: https://github.com/avrdudes/avr-libc/issues/765
+[875]: https://github.com/avrdudes/avr-libc/issues/875
 [876]: https://github.com/avrdudes/avr-libc/issues/876
 [936]: https://github.com/avrdudes/avr-libc/issues/936
+[959]: https://github.com/avrdudes/avr-libc/issues/959
+[960]: https://github.com/avrdudes/avr-libc/issues/960
+[961]: https://github.com/avrdudes/avr-libc/issues/961
 [970]: https://github.com/avrdudes/avr-libc/issues/970
 [971]: https://github.com/avrdudes/avr-libc/issues/971
 [973]: https://github.com/avrdudes/avr-libc/issues/973
@@ -187,3 +235,6 @@
 [1019]: https://github.com/avrdudes/avr-libc/issues/1019
 [1023]: https://github.com/avrdudes/avr-libc/issues/1023
 [1024]: https://github.com/avrdudes/avr-libc/issues/1024
+[1032]: https://github.com/avrdudes/avr-libc/issues/1032
+[1033]: https://github.com/avrdudes/avr-libc/issues/1033
+[1036]: https://github.com/avrdudes/avr-libc/issues/1036

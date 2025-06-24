@@ -109,8 +109,8 @@ ENTRY_FLOAT expf exp expl
 	XJMP	_U(__inversef)
 ENDFUNC
 
-	PGMX_SECTION(.exp)
-.L_table:
+	PGMX_SECTION(fplib.exp)
+OBJECT .L_table
 	.byte	7
 	.byte	     0x63,0x42,0x36,0xb7	; -0.0000108635
 	.byte	0x9b,0xd8,0xa7,0x1a,0x39	;  0.0001474911
@@ -120,6 +120,6 @@ ENDFUNC
 	.byte	0x6d,0xed,0xfd,0x75,0x3e	;  0.2402264688
 	.byte	0xf6,0x17,0x72,0x31,0xbf	; -0.6931471802
 	.byte	0x00,0x00,0x00,0x80,0x3f	;  1.0000000000
-	.end
+ENDOBJ .L_table
 
 #endif /* !defined(__AVR_TINY__) */

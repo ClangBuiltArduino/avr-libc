@@ -555,7 +555,7 @@ dnl Same replacements as performed by mlib-gen.py::to_ident().
 		`
       eval "DEVLIST_${ident}=\"\${DEVLIST_${ident}} $1\""
       SUPPORTED_MCUS="${SUPPORTED_MCUS} $1"
-      upper=$(echo "$1" | tr a-z A-Z)
+      upper=$(echo "$1" | ${srcdir}/devtools/mcu-to-avr-name.sh)
       defd="defined(__AVR_${upper}__)"
       AS_CASE([$1],
 	      [[avr*[0-9]d*]], [COND_DEFINED_Dx="${COND_DEFINED_Dx} || ${defd}"],
@@ -586,12 +586,12 @@ AC_DEFUN(
       CFLAGS="-mmcu=$1 -I${srcdir}/include"
       AC_MSG_CHECKING(compact vector table support for $1)
       AC_COMPILE_IFELSE(
-        [AC_LANG_SOURCE([
+        [AC_LANG_SOURCE([[
 	  #include <avr/io.h>
 	  #ifndef CPUINT_CVT_bm
 	  int a[-1];
 	  #endif
-	  ],[])],
+	  ]],[])],
           [has_$1_cvt=yes],
           [has_$1_cvt=no]
         )
@@ -601,6 +601,44 @@ AC_DEFUN(
     fi
     CFLAGS=${old_CFLAGS}
     AM_CONDITIONAL(HAS_$1_CVT, test "x${has_$1_cvt}" = "xyes")
+  ]
+)
+
+dnl avr/io.h may define BAUD, hence BAUD is reserved and shuold not be
+dnl #defined by the user.
+AC_DEFUN(
+  CHECK_AVR_RESERVED,
+  [
+    if test "x${MULTIDIR_$1}" != "x"
+    then
+      old_CFLAGS=${CFLAGS}
+      CFLAGS="-mmcu=$1 -I${srcdir}/include -Werror"
+      AC_MSG_CHECKING([if BAUD is reserved for $1])
+      dnl #define __BITS_DEVINFO_H_ so then <avr/io.h>'s
+      dnl #include <bits/devinfo.h> is void.
+      AC_COMPILE_IFELSE(
+        [AC_LANG_SOURCE([[
+          #define BAUD 123
+	  #define __BITS_DEVINFO_H_
+	  #include <avr/io.h>
+	  int a[BAUD == 123 ? 1 : -1];
+	  ]],[])],
+          [has_$1_baud=no],
+          [has_$1_baud=yes]
+        )
+      AS_CASE([$1],
+	  [[at90s1200|attiny11|attiny12|attiny15|attiny28]], [has_$1_baud=no],
+	  [])
+      AC_MSG_RESULT([${has_$1_baud}])
+    else
+      has_$1_baud=no
+    fi
+    CFLAGS=${old_CFLAGS}
+    upper=$(echo "$1" | ${srcdir}/devtools/mcu-to-avr-name.sh)
+    defd="defined(__AVR_${upper}__)"
+    AS_IF([test x${has_$1_baud} = xyes],
+        [COND_BAUD_RESERVED="${COND_BAUD_RESERVED} || ${defd}"],
+        [])
   ]
 )
 
@@ -677,6 +715,7 @@ AC_SUBST(DIR_avr1)
 COND_DEFINED_Dx="0"
 COND_DEFINED_Ex="0"
 COND_DEFINED_SD="0"
+COND_BAUD_RESERVED="0"
 SUPPORTED_MCUS=""
 
 m4_include([devices.m4])
@@ -685,6 +724,7 @@ AC_SUBST(SUPPORTED_MCUS)
 AC_SUBST(COND_DEFINED_Dx)
 AC_SUBST(COND_DEFINED_Ex)
 AC_SUBST(COND_DEFINED_SD)
+AC_SUBST(COND_BAUD_RESERVED)
 
 dnl The following include must precede multilib.m4 and is only
 dnl needed with avr-gcc v4.9 or older, namely if !HAS_DEV_LIB.

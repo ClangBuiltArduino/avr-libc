@@ -1,5 +1,6 @@
 /* Copyright (c) 2002, Marek Michalkiewicz
    Copyright (c) 2004,2007 Joerg Wunsch
+   Copyright (c) 2025 Georg-Johann Lay
 
    Portions of documentation Copyright (c) 1990, 1991, 1993, 1994
    The Regents of the University of California.
@@ -60,6 +61,8 @@ extern "C" {
 
     This file declares some basic C macros and functions as
     defined by the ISO standard, plus some AVR-specific extensions.
+
+    For some functions, \ref bench_libc "benchmarks" are available.
 */
 
 /** \ingroup avr_stdlib */
@@ -177,9 +180,12 @@ extern void qsort(void *__base, size_t __nmemb, size_t __size,
     The string may begin with an arbitrary amount of white space (as
     determined by isspace()) followed by a single optional \c '+' or \c '-'
     sign.  If \c base is zero or 16, the string may then include a
-    \c "0x" prefix, and the number will be read in base 16; otherwise,
-    a zero base is taken as 10 (decimal) unless the next character is
-    \c '0', in which case it is taken as 8 (octal).
+    \c "0x" or \c "0X" prefix, and the number will be read in base 16;
+    otherwise, a zero base is taken as 10 (decimal) unless the next
+    character is \c '0', in which case it is taken as 8 (octal).
+
+    Similarly, prefixes \c "0b" and \c "0B" signify base 2,
+    and \c "0o" and \c "0O" signify base 8.
 
     The remainder of the string is converted to a long value in the
     obvious manner, stopping at the first character which is not a
@@ -202,6 +208,42 @@ extern void qsort(void *__base, size_t __nmemb, size_t __size,
 extern long strtol(const char *__nptr, char **__endptr, int __base);
 
 /**
+    The strtoll() function converts the string in \c nptr to a long long
+    value.  The conversion is done according to the given base, which
+    must be between 2 and 36 inclusive, or be the special value 0.
+
+    The string may begin with an arbitrary amount of white space (as
+    determined by isspace()) followed by a single optional \c '+' or \c '-'
+    sign.  If \c base is zero or 16, the string may then include a
+    \c "0x" or \c "0X" prefix, and the number will be read in base 16;
+    otherwise, a zero base is taken as 10 (decimal) unless the next
+    character is \c '0', in which case it is taken as 8 (octal).
+
+    Similarly, prefixes \c "0b" and \c "0B" signify base 2,
+    and \c "0o" and \c "0O" signify base 8.
+
+    The remainder of the string is converted to a long long value in the
+    obvious manner, stopping at the first character which is not a
+    valid digit in the given base.  (In bases above 10, the letter \c 'A'
+    in either upper or lower case represents 10, \c 'B' represents 11,
+    and so forth, with \c 'Z' representing 35.)
+
+    If \c endptr is not NULL, strtoll() stores the address of the first
+    invalid character in \c *endptr.  If there were no digits at all,
+    however, strtoll() stores the original value of \c nptr in \c
+    *endptr.  (Thus, if \c *nptr is not \c '\\0' but \c **endptr is \c '\\0'
+    on return, the entire string was valid.)
+
+    The strtoll() function returns the result of the conversion, unless
+    the value would underflow or overflow.  If no conversion could be
+    performed, 0 is returned.  If an overflow or underflow occurs, \c
+    errno is set to \ref avr_errno "ERANGE" and the function return value
+    is clamped to \c LLONG_MIN or \c LLONG_MAX, respectively.
+    \since AVR-LibC v2.3
+*/
+extern long long strtoll(const char *__nptr, char **__endptr, int __base);
+
+/**
     The strtoul() function converts the string in \c nptr to an
     unsigned long value.  The conversion is done according to the
     given base, which must be between 2 and 36 inclusive, or be the
@@ -210,9 +252,12 @@ extern long strtol(const char *__nptr, char **__endptr, int __base);
     The string may begin with an arbitrary amount of white space (as
     determined by isspace()) followed by a single optional \c '+' or \c '-'
     sign.  If \c base is zero or 16, the string may then include a
-    \c "0x" prefix, and the number will be read in base 16; otherwise,
-    a zero base is taken as 10 (decimal) unless the next character is
-    \c '0', in which case it is taken as 8 (octal).
+    \c "0x" or \c "0X" prefix, and the number will be read in base 16;
+    otherwise, a zero base is taken as 10 (decimal) unless the next
+    character is \c '0', in which case it is taken as 8 (octal).
+
+    Similarly, prefixes \c "0b" and \c "0B" signify base 2,
+    and \c "0o" and \c "0O" signify base 8.
 
     The remainder of the string is converted to an unsigned long value
     in the obvious manner, stopping at the first character which is
@@ -226,7 +271,7 @@ extern long strtol(const char *__nptr, char **__endptr, int __base);
     *endptr.  (Thus, if \c *nptr is not \c '\\0' but \c **endptr is \c '\\0'
     on return, the entire string was valid.)
 
-    The strtoul() function return either the result of the conversion
+    The strtoul() function returns either the result of the conversion
     or, if there was a leading minus sign, the negation of the result
     of the conversion, unless the original (non-negated) value would
     overflow; in the latter case, strtoul() returns ULONG_MAX, and \c
@@ -234,6 +279,44 @@ extern long strtol(const char *__nptr, char **__endptr, int __base);
     be performed, 0 is returned.
 */
 extern unsigned long strtoul(const char *__nptr, char **__endptr, int __base);
+
+/**
+    The strtoull() function converts the string in \c nptr to an
+    unsigned long long value.  The conversion is done according to the
+    given base, which must be between 2 and 36 inclusive, or be the
+    special value 0.
+
+    The string may begin with an arbitrary amount of white space (as
+    determined by isspace()) followed by a single optional \c '+' or \c '-'
+    sign.  If \c base is zero or 16, the string may then include a
+    \c "0x" or \c "0X" prefix, and the number will be read in base 16;
+    otherwise, a zero base is taken as 10 (decimal) unless the next
+    character is \c '0', in which case it is taken as 8 (octal).
+
+    Similarly, prefixes \c "0b" and \c "0B" signify base 2,
+    and \c "0o" and \c "0O" signify base 8.
+
+    The remainder of the string is converted to an unsigned long long value
+    in the obvious manner, stopping at the first character which is
+    not a valid digit in the given base.  (In bases above 10, the
+    letter \c 'A' in either upper or lower case represents 10, \c 'B'
+    represents 11, and so forth, with \c 'Z' representing 35.)
+
+    If \c endptr is not NULL, strtoull() stores the address of the first
+    invalid character in \c *endptr.  If there were no digits at all,
+    however, strtoull() stores the original value of \c nptr in \c
+    *endptr.  (Thus, if \c *nptr is not \c '\\0' but \c **endptr is \c '\\0'
+    on return, the entire string was valid.)
+
+    The strtoull() function returns either the result of the conversion
+    or, if there was a leading minus sign, the negation of the result
+    of the conversion, unless the original (non-negated) value would
+    overflow; in the latter case, strtoull() returns ULLONG_MAX, and \c
+    errno is set to \ref avr_errno "ERANGE".  If no conversion could
+    be performed, 0 is returned.
+    \since AVR-LibC v2.3
+*/
+extern unsigned long long strtoull(const char *__nptr, char **__endptr, int __base);
 
 /**
     The atol() function converts the initial portion of the string
@@ -332,12 +415,14 @@ extern void *calloc(size_t __nele, size_t __size) __ATTR_MALLOC__;
 extern void *realloc(void *__ptr, size_t __size) __ATTR_MALLOC__;
 
 extern float strtof(const char *__nptr, char **__endptr);
+
 /** \ingroup avr_stdlib
     The strtod() function is similar to strtof(), except that the conversion
     result is of type \c double instead of \c float.
 
     strtod() is currently only supported when \c double is a 32-bit type. */
 extern double strtod(const char *__nptr, char **__endptr);
+
 /** \ingroup avr_stdlib
     The strtold() function is similar to strtof(), except that the conversion
     result is of type \c long \c double instead of \c float.
@@ -363,6 +448,7 @@ extern int atexit(void (*func)(void));
     It is equivalent to calling
 	\code strtof(nptr, (char**) 0); \endcode */
 extern float atoff(const char *__nptr);
+
 /** \ingroup avr_stdlib
     \fn  double atof (const char *nptr)
 
@@ -372,6 +458,7 @@ extern float atoff(const char *__nptr);
     It is equivalent to calling
 	\code strtod(nptr, (char**) 0); \endcode */
 extern double atof(const char *__nptr);
+
 /** \ingroup avr_stdlib
     \fn long double atofl (const char *nptr)
 
@@ -455,6 +542,13 @@ extern int rand_r(unsigned long *__ctx);
     If radix is 10 and val is negative, a minus sign will be prepended.
 
    The itoa() function returns the pointer passed as \c s.
+
+   \note Decimal conversions can be sped up by using the ktoa() function
+   from \ref avr_stdfix "<stdfix.h>" that converts fixed-point values to
+   decimal ASCII, like in <code>ktoa((accum) val, s, FXTOA_TRUNC)</code>
+   that converts \c val to a decimal ASCII representation with zero
+   fractional digits.  For example, converting 1000 using itoa() takes
+   around 700 cycles whereas ktoa() does the job in less than 300 cycles.
 */
 #ifdef  __DOXYGEN__
 extern char *itoa(int val, char *s, int radix);
@@ -548,6 +642,13 @@ char *ltoa (long __val, char *__s, int __radix)
    \c 'a'.
 
    The utoa() function returns the pointer passed as \c s.
+
+   \note Decimal conversions can be sped up by using the uktoa() function from
+   \ref avr_stdfix "<stdfix.h>" that converts fixed-point values to decimal
+   ASCII, like in <code>uktoa((unsigned accum) val, s, FXTOA_TRUNC)</code>
+   that converts \c val to a decimal ASCII representation with zero
+   fractional digits.  For example, converting 1000 using utoa() takes
+   around 700 cycles whereas uktoa() does the job in less than 300 cycles.
 */
 #ifdef  __DOXYGEN__
 extern char *utoa(unsigned int val, char *s, int radix);

@@ -84,6 +84,8 @@ Two groups of fixed-point data types are added:
 \remark
   - Upper case constant suffixes are also supported.
   - The \c long \c long fixed-point types are avr-gcc extensions.
+
+See also some \ref bench_fxlib "benchmarks".
 */
 
 
@@ -107,7 +109,8 @@ extern "C" {
 
 /** \ingroup avr_stdfix
     A flag to select rounding to nearest in a fixed-point to
-    decimal ASCII conversion.
+    decimal ASCII conversion. Rounding mode is the default,
+    i.e. FXTOA_ROUND can be omitted.
 
     To be used in the \a mode parameter of such a conversion.
     For details and examples, see uktoa().
@@ -161,7 +164,7 @@ extern "C" {
 
     For the meaning of \p mode, and for the (maximal) number of
     character written by this function, see uktoa().
-    \since AVR-Libc v2.3 */
+    \since AVR-LibC v2.3 */
 char* hktoa (short accum x, char *buf, unsigned char mode);
 
 /** \ingroup avr_stdfix
@@ -171,7 +174,7 @@ char* hktoa (short accum x, char *buf, unsigned char mode);
 
     For the meaning of \p mode, and for the (maximal) number of
     character written by this function, see uktoa().
-    \since AVR-Libc v2.3 */
+    \since AVR-LibC v2.3 */
 char* hrtoa (short fract x, char *buf, unsigned char mode);
 
 /** \ingroup avr_stdfix
@@ -181,7 +184,7 @@ char* hrtoa (short fract x, char *buf, unsigned char mode);
 
     For the meaning of \p mode, and for the (maximal) number of
     character written by this function, see uktoa().
-    \since AVR-Libc v2.3 */
+    \since AVR-LibC v2.3 */
 char* ktoa (accum x, char *buf, unsigned char mode);
 
 /** \ingroup avr_stdfix
@@ -191,7 +194,7 @@ char* ktoa (accum x, char *buf, unsigned char mode);
 
     For the meaning of \p mode, and for the (maximal) number of
     character written by this function, see uktoa().
-    \since AVR-Libc v2.3 */
+    \since AVR-LibC v2.3 */
 char* rtoa (fract x, char *buf, unsigned char mode);
 
 /** \ingroup avr_stdfix
@@ -201,7 +204,7 @@ char* rtoa (fract x, char *buf, unsigned char mode);
 
     For the meaning of \p mode, and for the (maximal) number of
     character written by this function, see uktoa().
-    \since AVR-Libc v2.3 */
+    \since AVR-LibC v2.3 */
 char* uhktoa (unsigned short accum x, char *buf, unsigned char mode);
 
 /** \ingroup avr_stdfix
@@ -211,7 +214,7 @@ char* uhktoa (unsigned short accum x, char *buf, unsigned char mode);
 
     For the meaning of \p mode, and for the (maximal) number of
     character written by this function, see uktoa().
-    \since AVR-Libc v2.3 */
+    \since AVR-LibC v2.3 */
 char* uhrtoa (unsigned short fract x, char *buf, unsigned char mode);
 
 /** \ingroup avr_stdfix
@@ -239,6 +242,7 @@ char* uhrtoa (unsigned short fract x, char *buf, unsigned char mode);
   <dd>Round to nearest for \a Digs fractional digits.
     Rounding for \a Digs &ge; 5 has no effect, i.e. for such \a Digs values
     the rounded result will be the same like the truncated result.
+    Rounding mode is the default, i.e. FXTOA_ROUND can be omitted.
 
   <dt>#FXTOA_TRUNC
   <dd>Like FXTOA_ALL, but truncate the result (round to zero)
@@ -269,14 +273,14 @@ char* uhrtoa (unsigned short fract x, char *buf, unsigned char mode);
   <th>Mode
   <th>Result
 </tr>
-<tr><td>1.8uk<td><tt>FXTOA_ROUND | 0</tt><td><tt>"2"</tt></tr>
-<tr><td>1.8uk<td><tt>FXTOA_ROUND | 1</tt><td><tt>"1.8"</tt></tr>
-<tr><td>1.8uk<td><tt>FXTOA_ROUND | 2</tt><td><tt>"1.80"</tt></tr>
-<tr><td>1.8uk<td><tt>FXTOA_ROUND | 3</tt><td><tt>"1.800"</tt></tr>
-<tr><td>1.8uk<td><tt>FXTOA_ROUND | FXTOA_NTZ | 0</tt><td><tt>"2"</tt></tr>
-<tr><td>1.8uk<td><tt>FXTOA_ROUND | FXTOA_NTZ | 1</tt><td><tt>"1.8"</tt></tr>
-<tr><td>1.8uk<td><tt>FXTOA_ROUND | FXTOA_NTZ | 2</tt><td><tt>"1.8"</tt></tr>
-<tr><td>1.8uk<td><tt>FXTOA_ROUND | FXTOA_NTZ | 3</tt><td><tt>"1.8"</tt></tr>
+<tr><td>1.8uk<td><tt>0</tt><td><tt>"2"</tt></tr>
+<tr><td>1.8uk<td><tt>1</tt><td><tt>"1.8"</tt></tr>
+<tr><td>1.8uk<td><tt>2</tt><td><tt>"1.80"</tt></tr>
+<tr><td>1.8uk<td><tt>3</tt><td><tt>"1.800"</tt></tr>
+<tr><td>1.8uk<td><tt>FXTOA_NTZ | 0</tt><td><tt>"2"</tt></tr>
+<tr><td>1.8uk<td><tt>FXTOA_NTZ | 1</tt><td><tt>"1.8"</tt></tr>
+<tr><td>1.8uk<td><tt>FXTOA_NTZ | 2</tt><td><tt>"1.8"</tt></tr>
+<tr><td>1.8uk<td><tt>FXTOA_NTZ | 3</tt><td><tt>"1.8"</tt></tr>
 <tr><td>1.8uk<td><tt>FXTOA_TRUNC | FXTOA_COMMA | 0</tt><td><tt>"1"</tt></tr>
 <tr><td>1.8uk<td><tt>FXTOA_TRUNC | FXTOA_COMMA | 1</tt><td><tt>"1,7"</tt></tr>
 <tr><td>1.8uk<td><tt>FXTOA_TRUNC | FXTOA_COMMA | 2</tt><td><tt>"1,79"</tt></tr>
@@ -285,6 +289,10 @@ char* uhrtoa (unsigned short fract x, char *buf, unsigned char mode);
 </table>
 
 The following table helps with providing enough memory in \a buf.
+
+Notice that the required size of \a buf is independent of #FXTOA_NTZ.
+This is the case since with #FXTOA_NTZ the required buffer size may
+be larger that the size of the returned string.
 
 <table>
   <caption>Maximum Number of Bytes written to buf</caption>
@@ -354,7 +362,7 @@ The following table helps with providing enough memory in \a buf.
   </tr>
 </table>
 
-    \since AVR-Libc v2.3 */
+    \since AVR-LibC v2.3 */
 char* uktoa (unsigned accum x, char *buf, unsigned char mode);
 
 /** \ingroup avr_stdfix
@@ -364,7 +372,7 @@ char* uktoa (unsigned accum x, char *buf, unsigned char mode);
 
     For the meaning of \p mode, and for the (maximal) number of
     character written by this function, see uktoa().
-    \since AVR-Libc v2.3 */
+    \since AVR-LibC v2.3 */
 char* urtoa (unsigned fract x, char *buf, unsigned char mode);
 
 
@@ -885,12 +893,70 @@ unsigned long long accum roundullk (unsigned long long accum val, int bit);
 /** \name Square Root and Transcendental Functions */
 
 /** \ingroup avr_stdfix
+    Compute the arcus cosine of \p x.
+    The returned value is in the range [0, &pi;].
+    For invalid values of \p x the returned value
+    is &minus;65536 = #kbits (0x80000000).
+
+    The absolute error is bounded by 5.5&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;14.1</sup>.
+
+    \since AVR-LibC v2.3  */
+accum acosk (accum x);
+
+/** \ingroup avr_stdfix
+    Compute the arcus cosine of \p x.
+    The returned value is in the range [0, &pi;/2].
+    For invalid values of \p x the returned value
+    is 32768 = #ukbits (0x80000000).
+
+    The absolute error is bounded by 4.6&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;14.4</sup>.
+
+    \since AVR-LibC v2.3  */
+unsigned accum acosuk (unsigned accum x);
+
+/** \ingroup avr_stdfix
+    Compute the arcus sine of \p x.
+    The returned value is in the range [&minus;&pi;/2, &pi;/2].
+    For invalid values of \p x the returned value
+    is &minus;65536 = #kbits (0x80000000).
+
+    The absolute error is bounded by 5.1&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;14</sup>.
+
+    \since AVR-LibC v2.3  */
+accum asink (accum x);
+
+/** \ingroup avr_stdfix
+    Compute the arcus sine of \p x.
+    The returned value is in the range [0, &pi;/2].
+    For invalid values of \p x the returned value
+    is 32768 = #ukbits (0x80000000).
+
+    The absolute error is bounded by 4.5&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;14.4</sup>.
+
+    \since AVR-LibC v2.3  */
+unsigned accum asinuk (unsigned accum x);
+
+/** \ingroup avr_stdfix
+    Compute the arcus tangent of \p x.
+    The returned value is in the range (&minus;&pi;/2, &pi;/2&asymp;1.5708).
+
+    \since AVR-LibC v2.3  */
+accum atank (accum x);
+
+/** \ingroup avr_stdfix
+    Compute the arcus tangent of \p x.
+    The returned value is in the range [0, &pi;/2&asymp;1.5708).
+
+    \since AVR-LibC v2.3  */
+unsigned accum atanuk (unsigned accum x);
+
+/** \ingroup avr_stdfix
     Compute the arcus tangent of \p x.
     The returned value is in the range [0, &pi;/4&asymp;0.7854].
 
-    The absolute error is bounded by 4.5&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;14</sup>.
-    The worst case execution time (WCET) is around 250 cycles when MUL is
-    available, and around  1400 cycles when MUL is not available
+    The absolute error is bounded by 2.6&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;15</sup>.
+    The worst case execution time (WCET) is around 210 cycles when MUL is
+    available, and around  1000 cycles when MUL is not available
     (measured with avr-gcc v15).
     \since AVR-LibC v2.3  */
 unsigned fract atanur (unsigned fract x);
@@ -1017,8 +1083,20 @@ short fract sqrthr(short fract radic);
 
 /** \ingroup avr_stdfix
     Square root of the value \p radic rounded down.
+    The result is in the range [0, 1).
+
+    The absolute error is in the range [&minus;3.9&middot;10<sup>&minus;3</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;8</sup>, 0].
+    The worst case execution time (WCET) is around 120 cycles.
     \since AVR-LibC v2.3  */
 unsigned short fract sqrtuhr(unsigned short fract radic);
+
+/** \ingroup avr_stdfix
+    Square root of the value \p radic.  The result is in the range [0, 1).
+
+    The absolute error is in the range [&minus;1.5&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;16</sup>, 0].
+    The worst case execution time (WCET) is around 320 cycles.
+    \since AVR-LibC v2.3  */
+unsigned fract sqrtur(unsigned fract radic);
 
 
 /** \name Type-Generic Functions */
@@ -1047,10 +1125,18 @@ int countlsfx (type val);
 type roundfx (type val, int bit);
 
 #else /* Doxygen */
+extern unsigned accum acosuk(unsigned accum) __ATTR_CONST__;
+extern unsigned accum asinuk(unsigned accum) __ATTR_CONST__;
+extern unsigned accum atanuk(unsigned accum) __ATTR_CONST__;
+extern accum acosk(accum) __ATTR_CONST__;
+extern accum asink(accum) __ATTR_CONST__;
+extern accum atank(accum) __ATTR_CONST__;
 extern unsigned fract atanur(unsigned fract) __ATTR_CONST__;
 
 extern short fract sqrthr(short fract) __asm__("__sqrthr") __ATTR_CONST__;
 extern unsigned short fract sqrtuhr(unsigned short fract) __asm__("__sqrtuhr") __ATTR_CONST__;
+unsigned fract sqrtur(unsigned fract) __ATTR_CONST__;
+
 extern unsigned short fract log21puhr(unsigned short fract) __ATTR_CONST__;
 extern unsigned fract log21pur(unsigned fract) __ATTR_CONST__;
 extern accum log2uk(unsigned accum) __ATTR_CONST__;

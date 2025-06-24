@@ -26,30 +26,38 @@
    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
    POSSIBILITY OF SUCH DAMAGE.  */
 
-#include <stdfix.h>
+;; atan(x) over (-oo, oo)  ->  (-pi/2, pi/2)
 
-#define T unsigned fract
+;; accum R22 = atank (accum R22);
 
-// atan(x) over [0, 1)  ->  [0, pi/4].
+#ifndef __AVR_TINY__
 
-T atanur (T x)
-{
-  T a0 = 0x0.0001p0ur; // 0.0000153
-  T a1 = 0x0.ff8dp0ur; // 0.9982452
-  T a2 = 0x0.8610p0ur; // 0.5236816
-  T a3 = 0x0.737ep0ur; // 0.4511414
-  T a4 = 0x0.439fp0ur; // 0.2641449
-  T a5 = 0x0.0caep0ur; // 0.0495300
+#include "asmdef.h"
 
-  // Reformulate the MiniMax polynomial such that the coefficients
-  // and intermediate values are all in [0, 1).
+#define X0   r22
+#define X1   r23
+#define X2   r24
+#define X3   r25
 
-  T y = a5;
-  y = a4 - x * y;
-  y = a3 - x * y;
-  y = a2 - x * y;
-  y = a1 + x * y - (x >> 1);
-  y = a0 + x * y;
+ENTRY atank
+    ;; X:SA -> X:USA
+    lsl     X0
+    rol     X1
+    rol     X2
+    rol     X3
+    brcs 1f
+    ;; X >= 0
+    XCALL   _U(atanuk)
+    rjmp 0f
+1:  ;; X < 0: atan(X) = -atan(-X)
+    XCALL   _U(__ssneg_4)
+    XCALL   _U(atanuk)
+    XCALL   _U(__negsi2)
+0:  asr     X3
+    ror     X2
+    ror     X1
+    ror     X0
+    ret
+ENDFUNC
 
-  return y;
-}
+#endif /* AVRrc */

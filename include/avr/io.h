@@ -63,38 +63,43 @@
 
     Finally, the following macros are defined:
 
-    - \b RAMEND
-    <br>
-    The last on-chip RAM address.
-    <br>
-    - \b XRAMEND
-    <br>
-    The last possible RAM location that is addressable. This is equal to
+    <dl>
+    <dt>RAMEND
+    <dd>The last on-chip RAM address.
+
+    <dt>XRAMEND
+    <dd>The last possible RAM location that is addressable. This is equal to
     RAMEND for devices that do not allow for external RAM. For devices
     that allow external RAM, this will be larger than RAMEND.
-    <br>
-    - \b E2END
-    <br>
-    The last EEPROM address.
-    <br>
-    - \b FLASHEND
-    <br>
-    The last byte address in the Flash program space.
-    <br>
-    - \b SPM_PAGESIZE
-    <br>
-    For devices with bootloader support, the flash pagesize
-    (in bytes) to be used for the \c SPM instruction.
-    - \b E2PAGESIZE
-    <br>
-    The size of the EEPROM page.
 
+    <dt>E2END
+    <dd>The last EEPROM address.
+
+    <dt>FLASHEND
+    <dd>The last byte address in the Flash program space.
+
+    <dt>SPM_PAGESIZE
+    <dd>For devices with bootloader support, the flash pagesize
+    (in bytes) to be used for the \c SPM instruction.
+
+    <dt>E2PAGESIZE
+    <dd>The size of the EEPROM page.
+    </dl>
 */
 
 #ifndef _AVR_IO_H_
 #define _AVR_IO_H_
 
 #include <avr/sfr_defs.h>
+
+#if defined(BAUD)
+#if !defined(__BITS_DEVINFO_H_)
+#include <bits/devinfo.h>
+#endif
+#if defined (__AVR_IO_H_USES_BAUD__)
+#error BAUD is a reserved identifier in <avr/io.h>
+#endif
+#endif /* defined BAUD? */
 
 #if defined (__AVR_AT94K__)
 #  include <avr/ioat94k.h>
