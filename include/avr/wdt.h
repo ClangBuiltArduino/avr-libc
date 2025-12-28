@@ -311,7 +311,7 @@ void wdt_enable (const uint8_t value)
 			: /* no outputs */
 			: [CCPADDRESS] "n" (_SFR_MEM_ADDR(CCP)),
 			[SIGNATURE] "r" ((uint8_t)0xD8),
-			[WDTREG] "I" (_SFR_IO_ADDR_OR_ZERO(_WD_CONTROL_REG)),
+			[WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)),
 			[WDVALUE] "r" ((uint8_t)((value & 0x08 ? _WD_PS3_MASK : 0x00)
 				| _BV(WDE) | (value & 0x07) ))
 			: "r0"
@@ -327,7 +327,7 @@ void wdt_enable (const uint8_t value)
 			"sts %[WDTREG],%[WDVALUE]" "\n\t"
 			"out __SREG__,__tmp_reg__"
 			: /* no outputs */
-			: [CCPADDRESS] "I" (_SFR_IO_ADDR_OR_ZERO(CCP)),
+			: [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)),
 			[SIGNATURE] "r" ((uint8_t)0xD8),
 			[WDTREG] "n" (_SFR_MEM_ADDR(_WD_CONTROL_REG)),
 			[WDVALUE] "r" ((uint8_t)((value & 0x08 ? _WD_PS3_MASK : 0x00)
@@ -345,9 +345,9 @@ void wdt_enable (const uint8_t value)
 			"out %[WDTREG],%[WDVALUE]" "\n\t"
 			"out __SREG__,__tmp_reg__"
 			: /* no outputs */
-			: [CCPADDRESS] "I" (_SFR_IO_ADDR_OR_ZERO(CCP)),
+			: [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)),
 			[SIGNATURE] "r" ((uint8_t)0xD8),
-			[WDTREG] "I" (_SFR_IO_ADDR_OR_ZERO(_WD_CONTROL_REG)),
+			[WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)),
 			[WDVALUE] "r" ((uint8_t)((value & 0x08 ? _WD_PS3_MASK : 0x00)
 				| _BV(WDE) | (value & 0x07) ))
 			: "r0"
@@ -393,7 +393,7 @@ void wdt_disable (void)
 				: [TEMP_WD] "=d" (__temp_wd)
 				: [CCPADDRESS] "n" (_SFR_MEM_ADDR(CCP)),
 				[SIGNATURE] "r" ((uint8_t)0xD8),
-				[WDTREG] "I" (_SFR_IO_ADDR_OR_ZERO(_WD_CONTROL_REG)),
+				[WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)),
 				[WDVALUE] "n" (1 << WDE)
 				: "r0"
 				);
@@ -411,7 +411,7 @@ void wdt_disable (void)
 				"sts %[WDTREG],%[TEMP_WD]" "\n\t"
 				"out __SREG__,__tmp_reg__"
 				: [TEMP_WD] "=d" (__temp_wd)
-				: [CCPADDRESS] "I" (_SFR_IO_ADDR_OR_ZERO(CCP)),
+				: [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)),
 				[SIGNATURE] "r" ((uint8_t)0xD8),
 				[WDTREG] "n" (_SFR_MEM_ADDR(_WD_CONTROL_REG)),
 				[WDVALUE] "n" (1 << WDE)
@@ -431,9 +431,9 @@ void wdt_disable (void)
 				"out %[WDTREG],%[TEMP_WD]" "\n\t"
 				"out __SREG__,__tmp_reg__"
 				: [TEMP_WD] "=d" (__temp_wd)
-				: [CCPADDRESS] "I" (_SFR_IO_ADDR_OR_ZERO(CCP)),
+				: [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)),
 				[SIGNATURE] "r" ((uint8_t)0xD8),
-				[WDTREG] "I" (_SFR_IO_ADDR_OR_ZERO(_WD_CONTROL_REG)),
+				[WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)),
 				[WDVALUE] "n" (1 << WDE)
 				: "r0"
 				);
@@ -455,7 +455,7 @@ void wdt_enable (const uint8_t value)
 				"out __SREG__,__tmp_reg__" "\n\t"
 				"out %0, %2"
 				: /* no outputs */
-				: "I" (_SFR_IO_ADDR_OR_ZERO(_WD_CONTROL_REG)),
+				: "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)),
 				"r" ((uint8_t)(_BV(_WD_CHANGE_BIT) | _BV(WDE))),
 				"r" ((uint8_t) ((value & 0x08 ? _WD_PS3_MASK : 0x00) |
 						_BV(WDE) | (value & 0x07)) )
@@ -497,7 +497,7 @@ void wdt_disable (void)
 				"out %[WDTREG],__zero_reg__" "\n\t"
 				"out __SREG__,__tmp_reg__"
 				: [TEMPREG] "=d" (__temp_reg)
-				: [WDTREG]  "I"  (_SFR_IO_ADDR_OR_ZERO(_WD_CONTROL_REG)),
+				: [WDTREG]  "I"  (_SFR_IO_ADDR(_WD_CONTROL_REG)),
 				[WDCE_WDE]  "n"  ((uint8_t)(_BV(_WD_CHANGE_BIT) | _BV(WDE)))
 				: "r0"
 		);
