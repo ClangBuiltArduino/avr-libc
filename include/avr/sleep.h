@@ -38,10 +38,7 @@
 
 
 /** \file */
-
-/** \defgroup avr_sleep <avr/sleep.h>: Power Management and Sleep Modes */
-/**@{*/
-/**
+/** \defgroup avr_sleep <avr/sleep.h>: Power Management and Sleep Modes
     \code #include <avr/sleep.h>\endcode
 
     Use of the \c SLEEP instruction can allow an application to reduce its
@@ -165,6 +162,17 @@
 
 #endif
 
+#ifdef __DOXYGEN__
+/** \ingroup avr_sleep
+    Set the sleep mode control register to the specified sleep mode \a mode.
+    The name of the sleep mode register depends on the device, see
+    the data sheet for details.
+    \param mode The sleep mode to be set.  The available sleep modes like
+    \c SLEEP_MODE_PWR_SAVE, \c SLEEP_MODE_PWR_DOWN, \c SLEEP_MODE_PWR_OFF etc.
+    depend on the device and are defined in avr/io.h.
+*/
+void set_sleep_mode (uint8_t mode);
+#endif /* Doxygen */
 
 /* Special casing these three devices - they are the
    only ones that need to write to more than one register. */
@@ -233,7 +241,6 @@
     depends on the specific mode selected with the set_sleep_mode() function.
     See the data sheet for your device for more details. */
 
-
 #if defined(__DOXYGEN__)
 
 /** \ingroup avr_sleep
@@ -283,7 +290,7 @@ extern void sleep_cpu (void);
 
 #define sleep_cpu()                              \
 do {                                             \
-  __asm__ __volatile__ ( "sleep" "\n\t" :: );    \
+  __asm__ __volatile__ ( "sleep" ::: "memory" ); \
 } while(0)
 
 #endif
@@ -294,7 +301,13 @@ do {                                             \
 /** \ingroup avr_sleep
 
     Put the device into sleep mode, taking care of setting
-    the SE bit before, and clearing it afterwards. */
+    the SE bit before, and clearing it afterwards.
+    All this command does is to run
+    \code
+    sleep_enable()
+    sleep_cpu()
+    sleep_disable()
+    \endcode  */
 extern void sleep_mode (void);
 
 #else
@@ -343,14 +356,12 @@ do { \
                        : [tempreg] "=&d" (tempreg) \
                        : [mcucr] "I" _SFR_IO_ADDR(BOD_CONTROL_REG), \
                          [bods_bodse] "i" (_BV(BODS) | _BV(BODSE)), \
-                         [not_bodse] "i" (~_BV(BODSE))); \
+                         [not_bodse] "i" (~_BV(BODSE)) \
+                       : "memory"); \
 } while (0)
 
 #endif
 
 #endif
-
-
-/**@}*/
 
 #endif /* _AVR_SLEEP_H_ */

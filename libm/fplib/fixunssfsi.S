@@ -33,7 +33,7 @@
 /* unsigned long __fixunssfsi (float A);
      The __fixunssfsi() function converts A to the integer value. No
      rounding, the fractional is lost. The compiler calls this function
-     to perform a cast operation from float (i.e. double) to unsigned long.
+     to perform a cast operation from float to unsigned long.
      No saturation. Negative input is permissable (like GCC/x86). Besides
      a normal 32-bits value __fixunssfsi() returns the extra error flag
      in a call-scratched register. This is used when a caller is the
@@ -91,6 +91,7 @@ ENTRY __fixunssfsi
 
 .L_err:	XCALL	_U(__fp_zero)
 	ldi	rAE, 1		; error flag
+.L_ret:
 	ret
 
 .L_zr:	XJMP	_U(__fp_zero)	; return 0x00000000, clear rAE
@@ -115,14 +116,7 @@ ENTRY __fixunssfsi
 
   ; restore the sign and return
 .L_sign:
-	brtc	6f
-	com	rA3
-	com	rA2
-	com	rA1
-	neg	rA0
-	sbci	rA1, -1
-	sbci	rA2, -1
-	sbci	rA3, -1
-6:	ret
+	brtc	.L_ret
+	XJMP	_U(__negsi2)
 
 ENDFUNC

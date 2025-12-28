@@ -45,8 +45,18 @@
 #include <bits/attribs.h>
 
 /** \file */
-/** \defgroup avr_stdfix <stdfix.h>: ISO/IEC TR 18037 Fixed-Point Arithmetic
-    \code #include <stdfix.h> \endcode
+/** \anchor stdfix_h
+    \defgroup avr_stdfix <stdfix.h>: ISO/IEC TR 18037 Fixed-Point Arithmetic
+\if STDFIX_AVRLIBC_H_NOT_INCLUDED
+    \code
+        #include <stdfix.h>
+        #include <stdfix-avrlibc.h>
+    \endcode
+\else
+    \code
+        #include <stdfix.h>
+    \endcode
+\endif
 
 As an extension, GNU C supports fixed-point types as defined in the
 N1169 draft of ISO/IEC DTR 18037.
@@ -57,29 +67,29 @@ N1169 draft of ISO/IEC DTR 18037.
 Two groups of fixed-point data types are added:
 - The <em>fract types</em> and the <em>accum types</em>.
   The data value of a \e fract type has no integral part,
-  hence values of a \e fract type are between &minus;1.0 and +1.0.
+  hence values of a \e fract type are between -1.0 and +1.0.
 - The value range of an \e accum type depends on the number of integral bits
   in the data type.
 
 <table>
 <caption>Fixed-Point Type Layout</caption>
-<tr><th>Const Suffix <th>Type <th>Size <th>Q-Format
-<tr><td align="right"><tt>hr</tt>  <td align="right"><tt>short fract</tt> <td>1<td>s.7
-<tr><td align="right"><tt>r</tt>   <td align="right"><tt>fract</tt>       <td>2<td>s.15
-<tr><td align="right"><tt>lr</tt>  <td align="right"><tt>long fract</tt>  <td>4<td>s.31
-<tr><td align="right"><tt>llr</tt> <td align="right"><tt>long long fract</tt> <td>8<td>s.63
-<tr><td align="right"><tt>hk</tt>  <td align="right"><tt>short accum</tt> <td>2<td>s8.7
-<tr><td align="right"><tt>k</tt>   <td align="right"><tt>accum</tt>       <td>4<td>s16.15
-<tr><td align="right"><tt>lk</tt>  <td align="right"><tt>long accum</tt>  <td>8<td>s32.31
-<tr><td align="right"><tt>llk</tt> <td align="right"><tt>long long accum</tt> <td>8<td>s16.47
-<tr><td align="right"><tt>uhr</tt> <td align="right"><tt>unsigned short fract</tt> <td>1<td>0.8
-<tr><td align="right"><tt>ur</tt>  <td align="right"><tt>unsigned fract</tt>       <td>2<td>0.16
-<tr><td align="right"><tt>ulr</tt> <td align="right"><tt>unsigned long fract</tt>  <td>4<td>0.32
-<tr><td align="right"><tt>ullr</tt><td align="right"><tt>unsigned long long fract</tt><td>8<td>0.64
-<tr><td align="right"><tt>uhk</tt> <td align="right"><tt>unsigned short accum</tt> <td>2<td>8.8
-<tr><td align="right"><tt>uk</tt>  <td align="right"><tt>unsigned accum</tt>       <td>4<td>16.16
-<tr><td align="right"><tt>ulk</tt> <td align="right"><tt>unsigned long accum</tt>  <td>8<td>32.32
-<tr><td align="right"><tt>ullk</tt><td align="right"><tt>unsigned long long accum</tt> <td>8<td>16.48
+<tr><th>Const Suffix <th>Type <th>Size <th>Q-Format <th> Epsilon
+<tr><td align="right"><tt>hr</tt>  <td align="right"><tt>short fract</tt> <td>1<td>s.7     <td>7.81&middot;10<sup>-3</sup>
+<tr><td align="right"><tt>r</tt>   <td align="right"><tt>fract</tt>       <td>2<td>s.15    <td>3.05&middot;10<sup>-5</sup>
+<tr><td align="right"><tt>lr</tt>  <td align="right"><tt>long fract</tt>  <td>4<td>s.31    <td>4.66&middot;10<sup>-10</sup>
+<tr><td align="right"><tt>llr</tt> <td align="right"><tt>long long fract</tt> <td>8<td>s.63<td>1.08&middot;10<sup>-19</sup>
+<tr><td align="right"><tt>hk</tt>  <td align="right"><tt>short accum</tt> <td>2<td>s8.7    <td>7.81&middot;10<sup>-3</sup>
+<tr><td align="right"><tt>k</tt>   <td align="right"><tt>accum</tt>       <td>4<td>s16.15  <td>3.05&middot;10<sup>-5</sup>
+<tr><td align="right"><tt>lk</tt>  <td align="right"><tt>long accum</tt>  <td>8<td>s32.31  <td>4.66&middot;10<sup>-10</sup>
+<tr><td align="right"><tt>llk</tt> <td align="right"><tt>long long accum</tt> <td>8<td>s16.47    <td>7.11&middot;10<sup>-15</sup>
+<tr><td align="right"><tt>uhr</tt> <td align="right"><tt>unsigned short fract</tt> <td>1<td>0.8  <td>3.91&middot;10<sup>-3</sup>
+<tr><td align="right"><tt>ur</tt>  <td align="right"><tt>unsigned fract</tt>       <td>2<td>0.16 <td>1.53&middot;10<sup>-5</sup>
+<tr><td align="right"><tt>ulr</tt> <td align="right"><tt>unsigned long fract</tt>  <td>4<td>0.32 <td>2.33&middot;10<sup>-10</sup>
+<tr><td align="right"><tt>ullr</tt><td align="right"><tt>unsigned long long fract</tt><td>8<td>0.64 <td>5.42&middot;10<sup>-20</sup>
+<tr><td align="right"><tt>uhk</tt> <td align="right"><tt>unsigned short accum</tt> <td>2<td>8.8  <td>3.91&middot;10<sup>-3</sup>
+<tr><td align="right"><tt>uk</tt>  <td align="right"><tt>unsigned accum</tt>       <td>4<td>16.16<td>1.53&middot;10<sup>-5</sup>
+<tr><td align="right"><tt>ulk</tt> <td align="right"><tt>unsigned long accum</tt>  <td>8<td>32.32<td>2.33&middot;10<sup>-10</sup>
+<tr><td align="right"><tt>ullk</tt><td align="right"><tt>unsigned long long accum</tt> <td>8<td>16.48<td>3.55&middot;10<sup>-15</sup>
 </table>
 \remark
   - Upper case constant suffixes are also supported.
@@ -259,11 +269,11 @@ char* uhrtoa (unsigned short fract x, char *buf, unsigned char mode);
     &bull;&nbsp;FXTOA_NTZ has no effect with FXTOA_ALL.<br>
     &bull;&nbsp;FXTOA_NTZ has no effect on the required buffer size.
   <dt>#FXTOA_DOT
-  <dd>The decimal point is a dot (\c .). This is the default, i.e. FXTOA_DOT
-      can be omitted.
+  <dd>The decimal point is a dot (<tt>.</tt>).
+      This is the default, i.e. FXTOA_DOT can be omitted.
 
   <dt>#FXTOA_COMMA
-  <dd>The decimal point is a comma (\c ,).
+  <dd>The decimal point is a comma (<tt>,</tt>).
 </dl>
 
 <table>
@@ -308,56 +318,56 @@ be larger that the size of the returned string.
     <td align="right">#uktoa
     <td align="center">23
     <td align="center">7 + \a Digs
-    <td align="center">2<sup>16</sup>&minus;2<sup>&minus;16</sup>
+    <td align="center">2<sup>16</sup>-2<sup>-16</sup>
     <td>65535.9999847412109375
   <tr>
     <td align="right"><tt>accum</tt>
     <td align="right">#ktoa
     <td align="center">23
     <td align="center">8 + \a Digs
-    <td align="center">2<sup>16</sup>&minus;2<sup>&minus;15</sup>
+    <td align="center">2<sup>16</sup>-2<sup>-15</sup>
     <td>65535.999969482421875
   <tr>
     <td align="right"><tt>unsigned short accum</tt>
     <td align="right">#uhktoa
     <td align="center">13
     <td align="center">5 + \a Digs
-    <td align="center">2<sup>8</sup>&minus;2<sup>&minus;8</sup>
+    <td align="center">2<sup>8</sup>-2<sup>-8</sup>
     <td>255.99609375
   <tr>
     <td align="right"><tt>short accum</tt>
     <td align="right">#hktoa
     <td align="center">13
     <td align="center">6 + \a Digs
-    <td align="center">2<sup>8</sup>&minus;2<sup>&minus;7</sup>
+    <td align="center">2<sup>8</sup>-2<sup>-7</sup>
     <td>255.9921875
   <tr>
     <td align="right"><tt>unsigned fract</tt>
     <td align="right">#urtoa
     <td align="center">19
     <td align="center">3 + \a Digs
-    <td align="center">1&minus;2<sup>&minus;16</sup>
+    <td align="center">1-2<sup>-16</sup>
     <td>0.9999847412109375
   <tr>
     <td align="right"><tt>fract</tt>
     <td align="right">#rtoa
     <td align="center">19
     <td align="center">4 + \a Digs
-    <td align="center">1&minus;2<sup>&minus;15</sup>
+    <td align="center">1-2<sup>-15</sup>
     <td>0.999969482421875
   <tr>
     <td align="right"><tt>unsigned short fract</tt>
     <td align="right">#uhrtoa
     <td align="center">11
     <td align="center">3 + \a Digs
-    <td align="center">1&minus;2<sup>&minus;8</sup>
+    <td align="center">1-2<sup>-8</sup>
     <td>0.99609375
   <tr>
     <td align="right"><tt>short fract</tt>
     <td align="right">#hrtoa
     <td align="center">11
     <td align="center">4 + \a Digs
-    <td align="center">1&minus;2<sup>&minus;7</sup>
+    <td align="center">1-2<sup>-7</sup>
     <td>0.9921875
   </tr>
 </table>
@@ -822,8 +832,8 @@ unsigned long long fract roundullr (unsigned long long fract val, int bit);
     fit into the range of the return type, the result is saturated.
 
     As an extension, \p bit may be in the range
-    <tt>&minus;IBIT &lt; bit &lt; FBIT</tt>.
-    For example, <tt>bit = &minus;1</tt> rounds to an even value.  */
+    <tt>-IBIT &lt; bit &lt; FBIT</tt>.
+    For example, <tt>bit = -1</tt> rounds to an even value.  */
 short accum roundhk (short accum val, int bit);
 
 /** \ingroup avr_stdfix
@@ -831,8 +841,8 @@ short accum roundhk (short accum val, int bit);
     fit into the range of the return type, the result is saturated.
 
     As an extension, \p bit may be in the range
-    <tt>&minus;IBIT &lt; bit &lt; FBIT</tt>.
-    For example, <tt>bit = &minus;1</tt> rounds to an even value.  */
+    <tt>-IBIT &lt; bit &lt; FBIT</tt>.
+    For example, <tt>bit = -1</tt> rounds to an even value.  */
 unsigned short accum rounduhk (unsigned short accum val, int bit);
 
 /** \ingroup avr_stdfix
@@ -840,8 +850,8 @@ unsigned short accum rounduhk (unsigned short accum val, int bit);
     fit into the range of the return type, the result is saturated.
 
     As an extension, \p bit may be in the range
-    <tt>&minus;IBIT &lt; bit &lt; FBIT</tt>.
-    For example, <tt>bit = &minus;1</tt> rounds to an even value.  */
+    <tt>-IBIT &lt; bit &lt; FBIT</tt>.
+    For example, <tt>bit = -1</tt> rounds to an even value.  */
 accum roundk (accum val, int bit);
 
 /** \ingroup avr_stdfix
@@ -849,8 +859,8 @@ accum roundk (accum val, int bit);
     fit into the range of the return type, the result is saturated.
 
     As an extension, \p bit may be in the range
-    <tt>&minus;IBIT &lt; bit &lt; FBIT</tt>.
-    For example, <tt>bit = &minus;1</tt> rounds to an even value.  */
+    <tt>-IBIT &lt; bit &lt; FBIT</tt>.
+    For example, <tt>bit = -1</tt> rounds to an even value.  */
 unsigned accum rounduk (unsigned accum val, int bit);
 
 /** \ingroup avr_stdfix
@@ -858,8 +868,8 @@ unsigned accum rounduk (unsigned accum val, int bit);
     fit into the range of the return type, the result is saturated.
 
     As an extension, \p bit may be in the range
-    <tt>&minus;IBIT &lt; bit &lt; FBIT</tt>.
-    For example, <tt>bit = &minus;1</tt> rounds to an even value.  */
+    <tt>-IBIT &lt; bit &lt; FBIT</tt>.
+    For example, <tt>bit = -1</tt> rounds to an even value.  */
 long accum roundlk (long accum val, int bit);
 
 /** \ingroup avr_stdfix
@@ -867,8 +877,8 @@ long accum roundlk (long accum val, int bit);
     fit into the range of the return type, the result is saturated.
 
     As an extension, \p bit may be in the range
-    <tt>&minus;IBIT &lt; bit &lt; FBIT</tt>.
-    For example, <tt>bit = &minus;1</tt> rounds to an even value.  */
+    <tt>-IBIT &lt; bit &lt; FBIT</tt>.
+    For example, <tt>bit = -1</tt> rounds to an even value.  */
 unsigned long accum roundulk (unsigned long accum val, int bit);
 
 /** \ingroup avr_stdfix
@@ -876,8 +886,8 @@ unsigned long accum roundulk (unsigned long accum val, int bit);
     fit into the range of the return type, the result is saturated.
 
     As an extension, \p bit may be in the range
-    <tt>&minus;IBIT &lt; bit &lt; FBIT</tt>.
-    For example, <tt>bit = &minus;1</tt> rounds to an even value.  */
+    <tt>-IBIT &lt; bit &lt; FBIT</tt>.
+    For example, <tt>bit = -1</tt> rounds to an even value.  */
 long long accum roundllk (long long accum val, int bit);
 
 /** \ingroup avr_stdfix
@@ -885,8 +895,8 @@ long long accum roundllk (long long accum val, int bit);
     fit into the range of the return type, the result is saturated.
 
     As an extension, \p bit may be in the range
-    <tt>&minus;IBIT &lt; bit &lt; FBIT</tt>.
-    For example, <tt>bit = &minus;1</tt> rounds to an even value.  */
+    <tt>-IBIT &lt; bit &lt; FBIT</tt>.
+    For example, <tt>bit = -1</tt> rounds to an even value.  */
 unsigned long long accum roundullk (unsigned long long accum val, int bit);
 
 
@@ -894,67 +904,79 @@ unsigned long long accum roundullk (unsigned long long accum val, int bit);
 
 /** \ingroup avr_stdfix
     Compute the arcus cosine of \p x.
-    The returned value is in the range [0, &pi;].
+    The returned value is in the range
+    {{{[0, &pi;]}}}.
     For invalid values of \p x the returned value
-    is &minus;65536 = #kbits (0x80000000).
+    is -65536 = #kbits (0x80000000).
 
-    The absolute error is bounded by 5.5&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;14.1</sup>.
+    The absolute error is bounded by
+    {{{5.5&middot;10<sup>-5</sup>&nbsp;&asymp;&nbsp;2<sup>-14.1</sup>}}}.
 
     \since AVR-LibC v2.3  */
 accum acosk (accum x);
 
 /** \ingroup avr_stdfix
     Compute the arcus cosine of \p x.
-    The returned value is in the range [0, &pi;/2].
+    The returned value is in the range
+    {{{[0, &pi;/2]}}}.
     For invalid values of \p x the returned value
     is 32768 = #ukbits (0x80000000).
 
-    The absolute error is bounded by 4.6&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;14.4</sup>.
+    The absolute error is bounded by
+    {{{4.6&middot;10<sup>-5</sup>&nbsp;&asymp;&nbsp;2<sup>-14.4</sup>}}}.
 
     \since AVR-LibC v2.3  */
 unsigned accum acosuk (unsigned accum x);
 
 /** \ingroup avr_stdfix
     Compute the arcus sine of \p x.
-    The returned value is in the range [&minus;&pi;/2, &pi;/2].
+    The returned value is in the range
+    {{{[-&pi;/2, &pi;/2]}}}.
     For invalid values of \p x the returned value
-    is &minus;65536 = #kbits (0x80000000).
+    is -65536 = #kbits (0x80000000).
 
-    The absolute error is bounded by 5.1&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;14</sup>.
+    The absolute error is bounded by
+    {{{5.1&middot;10<sup>-5</sup>&nbsp;&asymp;&nbsp;2<sup>-14</sup>}}}.
 
     \since AVR-LibC v2.3  */
 accum asink (accum x);
 
 /** \ingroup avr_stdfix
     Compute the arcus sine of \p x.
-    The returned value is in the range [0, &pi;/2].
+    The returned value is in the range
+    {{{[0, &pi;/2]}}}.
     For invalid values of \p x the returned value
     is 32768 = #ukbits (0x80000000).
 
-    The absolute error is bounded by 4.5&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;14.4</sup>.
+    The absolute error is bounded by
+    {{{4.5&middot;10<sup>-5</sup>&nbsp;&asymp;&nbsp;2<sup>-14.4</sup>}}}.
 
     \since AVR-LibC v2.3  */
 unsigned accum asinuk (unsigned accum x);
 
 /** \ingroup avr_stdfix
     Compute the arcus tangent of \p x.
-    The returned value is in the range (&minus;&pi;/2, &pi;/2&asymp;1.5708).
+    The returned value is in the range
+    {{{(-&pi;/2, &pi;/2&asymp;1.5708)}}}.
 
     \since AVR-LibC v2.3  */
 accum atank (accum x);
 
 /** \ingroup avr_stdfix
     Compute the arcus tangent of \p x.
-    The returned value is in the range [0, &pi;/2&asymp;1.5708).
+    The returned value is in the range
+    {{{[0, &pi;/2&asymp;1.5708)}}}.
 
     \since AVR-LibC v2.3  */
 unsigned accum atanuk (unsigned accum x);
 
 /** \ingroup avr_stdfix
     Compute the arcus tangent of \p x.
-    The returned value is in the range [0, &pi;/4&asymp;0.7854].
+    The returned value is in the range
+    {{{[0, &pi;/4&asymp;0.7854]}}}.
 
-    The absolute error is bounded by 2.6&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;15</sup>.
+    The absolute error is bounded by
+    {{{2.6&middot;10<sup>-5</sup>&nbsp;&asymp;&nbsp;2<sup>-15</sup>}}}.
     The worst case execution time (WCET) is around 210 cycles when MUL is
     available, and around  1000 cycles when MUL is not available
     (measured with avr-gcc v15).
@@ -962,24 +984,30 @@ unsigned accum atanuk (unsigned accum x);
 unsigned fract atanur (unsigned fract x);
 
 /** \ingroup avr_stdfix
-    Compute 2<sup>x</sup> with saturation.
+    Compute
+    {{{2<sup>x</sup>}}}
+    with saturation.
 
     The WCET is at least the one of exp2m1ur().
     \since AVR-LibC v2.3  */
 accum exp2k (accum x);
 
 /** \ingroup avr_stdfix
-    Compute 2<sup>x</sup> with saturation.
+    Compute
+    {{{2<sup>x</sup>}}}
+    with saturation.
 
     The WCET is at least the one of exp2m1ur().
     \since AVR-LibC v2.3  */
 unsigned accum exp2uk (unsigned accum x);
 
 /** \ingroup avr_stdfix
-    Compute 2<sup>x</sup>&nbsp;&minus;&nbsp;1.
+    Compute
+    {{{2<sup>x</sup>&nbsp;-&nbsp;1}}}.
     The returned value is in the range [0, 1).
 
-    The absolute error is bounded by 2.2&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;15.4</sup>.
+    The absolute error is bounded by
+    {{{2.2&middot;10<sup>-5</sup>&nbsp;&asymp;&nbsp;2<sup>-15.4</sup>}}}.
     The worst case execution time (WCET) is around 200 cycles when MUL is
     available, and around  1000 cycles when MUL is not available
     (measured with avr-gcc v15).
@@ -987,60 +1015,76 @@ unsigned accum exp2uk (unsigned accum x);
 unsigned fract exp2m1ur (unsigned fract x);
 
 /** \ingroup avr_stdfix
-    Returns log<sub>2</sub>(\p x), the logarithm to base 2 of the value \p x.
-    The returned value for \p x = 0 is &minus;32768.
+    Returns
+    {{{log<sub>2</sub>(x)}}},
+    the logarithm to base 2 of the value \p x.
+    The returned value for \p x = 0 is -32768.
 
-    The absolute error is bounded by 4.5&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;14.5</sup>.
+    The absolute error is bounded by
+    {{{4.5&middot;10<sup>-5</sup>&nbsp;&asymp;&nbsp;2<sup>-14.5</sup>}}}.
     The worst case execution time (WCET) is around 150 cycles more
     than the WCET of log21pur().
     \since AVR-LibC v2.3  */
 accum log2uk(unsigned accum x);
 
 /** \ingroup avr_stdfix
-    Return log<sub>2</sub>(\p x), the logarithm to base 2 of the value \p x.
-    The returned value for \p x = 0 is &minus;128.
+    Return
+    {{{log<sub>2</sub>(x)}}},
+    the logarithm to base 2 of the value \p x.
+    The returned value for \p x = 0 is -128.
 
-    The absolute error is bounded by 8&middot;10<sup>&minus;3</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;7</sup>.
+    The absolute error is bounded by
+    {{{8&middot;10<sup>-3</sup>&nbsp;&asymp;&nbsp;2<sup>-7</sup>}}}.
     The worst case execution time (WCET) is around 60 cycles plus
     the WCET of log21puhr().
     \since AVR-LibC v2.3  */
 short accum log2uhk(unsigned short accum x);
 
 /** \ingroup avr_stdfix
-    Return log<sub>2</sub>(1 + \p x),
+    Return
+    {{{log<sub>2</sub>(1 + x)}}},
     the logarithm to base 2 of the value 1 + \p x.
     The result is in the range [0, 1).
 
-    The absolute error is bounded by 4.3&middot;10<sup>&minus;3</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;7.5</sup>.
+    The absolute error is bounded by
+    {{{4.3&middot;10<sup>-3</sup>&nbsp;&asymp;&nbsp;2<sup>-7.5</sup>}}}.
     The worst case execution time (WCET) is around 25 cycles when MUL is
     available, and around 340 cycles when MUL is not available.
     \since AVR-LibC v2.3  */
 unsigned short fract log21puhr(unsigned short fract x);
 
 /** \ingroup avr_stdfix
-    Return log<sub>2</sub>(1 + \p x),
+    Return
+    {{{log<sub>2</sub>(1 + x)}}},
     the logarithm to base 2 of the value 1 + \p x.
     The result is in the range [0, 1).
 
-    The absolute error is bounded by 3&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;15</sup>.
+    The absolute error is bounded by
+    {{{3&middot;10<sup>-5</sup>&nbsp;&asymp;&nbsp;2<sup>-15</sup>}}}.
     The worst case execution time (WCET) is around 250 cycles when MUL is
     available, and around 1300 cycles when MUL is not available.
     \since AVR-LibC v2.3  */
 unsigned fract log21pur(unsigned fract x);
 
 /** \ingroup avr_stdfix
-    Cosine of \p x&middot;&pi;/2 radians.
+    Cosine of
+    {{{x&middot;&pi;/2}}}
+    radians.
 
-    The absolute error is bounded by 4.6&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;14.4</sup>.
+    The absolute error is bounded by
+    {{{4.6&middot;10<sup>-5</sup>&nbsp;&asymp;&nbsp;2<sup>-14.4</sup>}}}.
     The worst case execution time (WCET) is around 300 cycles when MUL is
     available, and around 1400 cycles when MUL is not available.
     \since AVR-LibC v2.3  */
 accum cospi2k(accum deg);
 
 /** \ingroup avr_stdfix
-    Sine of \p x&middot;&pi;/2 radians.
+    Sine of
+    {{{x&middot;&pi;/2}}}
+    radians.
 
-    The absolute error is bounded by 4.6&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;14.4</sup>.
+    The absolute error is bounded by
+    {{{4.6&middot;10<sup>-5</sup>&nbsp;&asymp;&nbsp;2<sup>-14.4</sup>}}}.
     The worst case execution time (WCET) is around 300 cycles when MUL is
     available, and around 1400 cycles when MUL is not available.
     \since AVR-LibC v2.3  */
@@ -1048,33 +1092,46 @@ accum sinpi2k(accum deg);
 
 /** \ingroup avr_stdfix
     Sine of the angle \a deg where \a deg is specified in degrees, i.e.
-    in the range [0&deg;, 256&deg;).
-    The returned value is in the range (&minus;1, +1), i.e. is never &minus;1.
+    in the range
+    {{{[0&deg;, 256&deg;)}}}.
+    The returned value is in the range (-1, +1), i.e. is never -1.
 
-    The absolute error is bounded by 6.5&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;13.9</sup>.
+    The absolute error is bounded by
+    {{{6.5&middot;10<sup>-5</sup>&nbsp;&asymp;&nbsp;2<sup>-13.9</sup>}}}.
     The worst case execution time (WCET) is around 70 cycles.
     \since AVR-LibC v2.3  */
 fract sinuhk_deg(unsigned short accum deg);
 
 /** \ingroup avr_stdfix
     Cosine of the angle \a deg where \a deg is specified in degrees, i.e.
-    in the range [0&deg;, 256&deg;).
-    The returned value is in the range (&minus;1, +1), i.e. is never &minus;1.
+    in the range
+    {{{[0&deg;, 256&deg;)}}}.
+    The returned value is in the range (-1, +1), i.e. is never -1.
 
-    The absolute error is bounded by 6.5&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;13.9</sup>.
+    The absolute error is bounded by
+    {{{6.5&middot;10<sup>-5</sup>&nbsp;&asymp;&nbsp;2<sup>-13.9</sup>}}}.
     The worst case execution time (WCET) is around 90 cycles.
     \since AVR-LibC v2.3  */
 fract cosuhk_deg(unsigned short accum deg);
 
 /** \ingroup avr_stdfix
-    Sine of \p x&middot;&pi;/2 radians.
+    Sine of
+    {{{x&middot;&pi;/2}}}
+    redians.
     The returned value is in the range [0, 1).
 
-    The absolute error is bounded by 2.9&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;15</sup>.
+    The absolute error is bounded by
+    {{{2.9&middot;10<sup>-5</sup>&nbsp;&asymp;&nbsp;2<sup>-15</sup>}}}.
     The worst case execution time (WCET) is around 260 cycles when MUL is
     available, and around 1400 cycles when MUL is not available.
     \since AVR-LibC v2.3  */
 unsigned fract sinpi2ur(unsigned fract x);
+
+/** \ingroup avr_stdfix
+    Square root of the value \p radic.  Negative values are returned unchanged.
+    The worst case execution time (WCET) is around 310 cycles.
+    \since AVR-LibC v2.3  */
+short accum sqrthk(short accum radic);
 
 /** \ingroup avr_stdfix
     Square root of the value \p radic rounded down.
@@ -1082,18 +1139,57 @@ unsigned fract sinpi2ur(unsigned fract x);
 short fract sqrthr(short fract radic);
 
 /** \ingroup avr_stdfix
+    Square root of the value \p radic.  Negative values are returned unchanged.
+    The worst case execution time (WCET) is around 640 cycles.
+    \since AVR-LibC v2.3  */
+accum sqrtk(accum radic);
+
+/** \ingroup avr_stdfix
+    Square root of the value \p radic.  Negative values are returned unchanged.
+    The worst case execution time (WCET) is around 1080 cycles.
+    \since AVR-LibC v2.3  */
+long fract sqrtlr(long fract radic);
+
+/** \ingroup avr_stdfix
+    Square root of the value \p radic.  Negative values are returned unchanged.
+    The worst case execution time (WCET) is around 320 cycles.
+    \since AVR-LibC v2.3  */
+fract sqrtr(fract radic);
+
+/** \ingroup avr_stdfix
+    Square root of the value \p radic rounded down.
+    The worst case execution time (WCET) is around 300 cycles.
+    \since AVR-LibC v2.3  */
+unsigned short accum sqrtuhk(unsigned short accum radic);
+
+/** \ingroup avr_stdfix
     Square root of the value \p radic rounded down.
     The result is in the range [0, 1).
 
-    The absolute error is in the range [&minus;3.9&middot;10<sup>&minus;3</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;8</sup>, 0].
+    The absolute error is in the range
+    {{{[-3.9&middot;10<sup>-3</sup>&nbsp;&asymp;&nbsp;2<sup>-8</sup>, 0]}}}.
     The worst case execution time (WCET) is around 120 cycles.
     \since AVR-LibC v2.3  */
 unsigned short fract sqrtuhr(unsigned short fract radic);
 
 /** \ingroup avr_stdfix
+    Square root of the value \p radic.
+    The worst case execution time (WCET) is around 620 cycles.
+    \since AVR-LibC v2.3  */
+unsigned accum sqrtuk(unsigned accum radic);
+
+
+/** \ingroup avr_stdfix
+    Square root of the value \p radic. The result is in the range [0, 1).
+    The worst case execution time (WCET) is around 1060 cycles.
+    \since AVR-LibC v2.3  */
+unsigned long fract sqrtulr(unsigned long fract radic);
+
+/** \ingroup avr_stdfix
     Square root of the value \p radic.  The result is in the range [0, 1).
 
-    The absolute error is in the range [&minus;1.5&middot;10<sup>&minus;5</sup>&nbsp;&asymp;&nbsp;2<sup>&minus;16</sup>, 0].
+    The absolute error is in the range
+    {{{[-1.5&middot;10<sup>-5</sup>&nbsp;&asymp;&nbsp;2<sup>-16</sup>, 0]}}}.
     The worst case execution time (WCET) is around 320 cycles.
     \since AVR-LibC v2.3  */
 unsigned fract sqrtur(unsigned fract radic);
@@ -1120,8 +1216,8 @@ int countlsfx (type val);
     fit into the range of the return type, the result is saturated.
 
     As an extension, \p bit may be in the range
-    <tt>&minus;IBIT &lt; bit &lt; FBIT</tt>.
-    For example, <tt>bit = &minus;1</tt> rounds to an even value.  */
+    <tt>-IBIT &lt; bit &lt; FBIT</tt>.
+    For example, <tt>bit = -1</tt> rounds to an even value.  */
 type roundfx (type val, int bit);
 
 #else /* Doxygen */
@@ -1135,7 +1231,14 @@ extern unsigned fract atanur(unsigned fract) __ATTR_CONST__;
 
 extern short fract sqrthr(short fract) __asm__("__sqrthr") __ATTR_CONST__;
 extern unsigned short fract sqrtuhr(unsigned short fract) __asm__("__sqrtuhr") __ATTR_CONST__;
+fract sqrtr(fract) __ATTR_CONST__;
 unsigned fract sqrtur(unsigned fract) __ATTR_CONST__;
+long fract sqrtlr(long fract) __ATTR_CONST__;
+unsigned long fract sqrtulr(unsigned long fract) __ATTR_CONST__;
+unsigned accum sqrtuk(unsigned accum) __ATTR_CONST__;
+accum sqrtk(accum) __ATTR_CONST__;
+short accum sqrthk(short accum) __ATTR_CONST__;
+unsigned short accum sqrtuhk(unsigned short accum) __ATTR_CONST__;
 
 extern unsigned short fract log21puhr(unsigned short fract) __ATTR_CONST__;
 extern unsigned fract log21pur(unsigned fract) __ATTR_CONST__;
@@ -1161,6 +1264,496 @@ extern char* uhrtoa (unsigned short fract, char*, unsigned char);
 extern char* hktoa (short accum, char*, unsigned char);
 extern char* hrtoa (short fract, char*, unsigned char);
 #endif /* Doxygen */
+
+#ifdef __DOXYGEN__
+/** \name Functions reading from PROGMEM */
+
+/** \ingroup avr_stdfix
+    Read a <tt>short fract</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline short fract pgm_read_hr (const short fract *addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned short fract</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned short fract pgm_read_uhr (const unsigned short fract *addr);
+
+/** \ingroup avr_stdfix
+    Read a <tt>fract</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline fract pgm_read_r (const fract *addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned fract</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned fract pgm_read_ur (const unsigned fract *addr);
+
+/** \ingroup avr_stdfix
+    Read a <tt>long fract</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline long fract pgm_read_lr (const long fract *addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned long fract</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned long fract pgm_read_ulr (const unsigned long fract *addr);
+
+/** \ingroup avr_stdfix
+    Read a <tt>long long fract</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline long long fract pgm_read_llr (const long long fract *addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned long long fract</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned long long fract pgm_read_ullr (const unsigned long long fract *addr);
+
+/** \ingroup avr_stdfix
+    Read a <tt>short accum</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline short accum pgm_read_hk (const short accum *addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned short accum</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned short accum pgm_read_uhk (const unsigned short accum *addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>accum</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline accum pgm_read_k (const accum *addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned accum</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned accum pgm_read_uk (const unsigned accum *addr);
+
+/** \ingroup avr_stdfix
+    Read a <tt>long accum</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline long accum pgm_read_lk (const long accum *addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned long accum</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned long accum pgm_read_ulk (const unsigned long accum *addr);
+
+/** \ingroup avr_stdfix
+    Read a <tt>long long accum</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline long long accum pgm_read_llk (const long long accum *addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned long long accum</tt> from 16-bit address \p addr.
+    The address is in the lower 64 KiB of program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned long long accum pgm_read_ullk (const unsigned long long accum *addr);
+
+#else /* Doxygen */
+
+#include <avr/pgmspace.h>
+
+_Avrlibc_Def_Pgm_1 (hr, short fract)
+_Avrlibc_Def_Pgm_1 (uhr, unsigned short fract)
+_Avrlibc_Def_Pgm_2 (r, fract)
+_Avrlibc_Def_Pgm_2 (ur, unsigned fract)
+_Avrlibc_Def_Pgm_4 (lr, long fract)
+_Avrlibc_Def_Pgm_4 (ulr, unsigned long fract)
+_Avrlibc_Def_Pgm_8 (llr, long long fract)
+_Avrlibc_Def_Pgm_8 (ullr, unsigned long long fract)
+
+_Avrlibc_Def_Pgm_2 (hk, short accum)
+_Avrlibc_Def_Pgm_2 (uhk, unsigned short accum)
+_Avrlibc_Def_Pgm_4 (k, accum)
+_Avrlibc_Def_Pgm_4 (uk, unsigned accum)
+_Avrlibc_Def_Pgm_8 (lk, long accum)
+_Avrlibc_Def_Pgm_8 (ulk, unsigned long accum)
+_Avrlibc_Def_Pgm_8 (llk, long long accum)
+_Avrlibc_Def_Pgm_8 (ullk, unsigned long long accum)
+#endif /* Doxygen */
+
+#ifdef __DOXYGEN__
+/** \name Functions reading from PROGMEM_FAR */
+
+/** \ingroup avr_stdfix
+    Read a <tt>short fract</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline short fract pgm_read_hr_far (uint_farptr_t addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned short fract</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned short fract pgm_read_uhr_far (uint_farptr_t addr);
+
+/** \ingroup avr_stdfix
+    Read a <tt>fract</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline fract pgm_read_r_far (uint_farptr_t addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned fract</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned fract pgm_read_ur_far (uint_farptr_t addr);
+
+/** \ingroup avr_stdfix
+    Read a <tt>long fract</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline long fract pgm_read_lr_far (uint_farptr_t addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned long fract</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned long fract pgm_read_ulr_far (uint_farptr_t addr);
+
+/** \ingroup avr_stdfix
+    Read a <tt>long long fract</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline long long fract pgm_read_llr_far (uint_farptr_t addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned long long fract</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned long long fract pgm_read_ullr_far (uint_farptr_t addr);
+
+/** \ingroup avr_stdfix
+    Read a <tt>short accum</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline short accum pgm_read_hk_far (uint_farptr_t addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned short accum</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned short accum pgm_read_uhk_far (uint_farptr_t addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>accum</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline accum pgm_read_k_far (uint_farptr_t addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned accum</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned accum pgm_read_uk_far (uint_farptr_t addr);
+
+/** \ingroup avr_stdfix
+    Read a <tt>long accum</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline long accum pgm_read_lk_far (uint_farptr_t addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned long accum</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned long accum pgm_read_ulk_far (uint_farptr_t addr);
+
+/** \ingroup avr_stdfix
+    Read a <tt>long long accum</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline long long accum pgm_read_llk_far (uint_farptr_t addr);
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned long long accum</tt> from far address \p addr.
+    The address is in the program memory.
+    \since AVR-LibC v2.3 */
+static inline unsigned long long accum pgm_read_ullk_far (uint_farptr_t addr);
+
+#else /* Doxygen */
+
+_Avrlibc_Def_Pgm_Far_1 (hr, short fract)
+_Avrlibc_Def_Pgm_Far_1 (uhr, unsigned short fract)
+_Avrlibc_Def_Pgm_Far_2 (r, fract)
+_Avrlibc_Def_Pgm_Far_2 (ur, unsigned fract)
+_Avrlibc_Def_Pgm_Far_4 (lr, long fract)
+_Avrlibc_Def_Pgm_Far_4 (ulr, unsigned long fract)
+_Avrlibc_Def_Pgm_Far_8 (llr, long long fract)
+_Avrlibc_Def_Pgm_Far_8 (ullr, unsigned long long fract)
+
+_Avrlibc_Def_Pgm_Far_2 (hk, short accum)
+_Avrlibc_Def_Pgm_Far_2 (uhk, unsigned short accum)
+_Avrlibc_Def_Pgm_Far_4 (k, accum)
+_Avrlibc_Def_Pgm_Far_4 (uk, unsigned accum)
+_Avrlibc_Def_Pgm_Far_8 (lk, long accum)
+_Avrlibc_Def_Pgm_Far_8 (ulk, unsigned long accum)
+_Avrlibc_Def_Pgm_Far_8 (llk, long long accum)
+_Avrlibc_Def_Pgm_Far_8 (ullk, unsigned long long accum)
+#endif /* Doxygen */
+
+/** \name EEPROM Read Functions */
+
+/** \ingroup avr_stdfix
+    Read a <tt>short fract</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+short fract eeprom_read_hr (const short fract *__p) __asm("eeprom_read_byte") __ATTR_PURE__;
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned short fract</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+unsigned short fract eeprom_read_uhr (const unsigned short fract *__p) __asm("eeprom_read_byte") __ATTR_PURE__;
+
+/** \ingroup avr_stdfix
+    Read a <tt>fract</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+fract eeprom_read_r (const fract *__p) __asm("eeprom_read_word") __ATTR_PURE__;
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned fract</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+unsigned fract eeprom_read_ur (const unsigned fract *__p) __asm("eeprom_read_word") __ATTR_PURE__;
+
+/** \ingroup avr_stdfix
+    Read a <tt>long fract</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+long fract eeprom_read_lr (const long fract *__p) __asm("eeprom_read_dword") __ATTR_PURE__;
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned long fract</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+unsigned long fract eeprom_read_ulr (const unsigned long fract *__p) __asm("eeprom_read_dword") __ATTR_PURE__;
+
+/** \ingroup avr_stdfix
+    Read a <tt>long long fract</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+long long fract eeprom_read_llr (const long long fract *__p) __asm("eeprom_read_qword") __ATTR_PURE__;
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned long long fract</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+unsigned long long fract eeprom_read_ullr (const unsigned long long fract *__p) __asm("eeprom_read_qword") __ATTR_PURE__;
+
+/** \ingroup avr_stdfix
+    Read a <tt>short accum</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+short accum eeprom_read_hk (const short accum *__p) __asm("eeprom_read_word") __ATTR_PURE__;
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned short accum</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+unsigned short accum eeprom_read_uhk (const unsigned short accum *__p) __asm("eeprom_read_word") __ATTR_PURE__;
+
+/** \ingroup avr_stdfix
+    Read an <tt>accum</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+accum eeprom_read_k (const accum *__p) __asm("eeprom_read_dword") __ATTR_PURE__;
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned accum</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+unsigned accum eeprom_read_uk (const unsigned accum *__p) __asm("eeprom_read_dword") __ATTR_PURE__;
+
+/** \ingroup avr_stdfix
+    Read a <tt>long accum</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+long accum eeprom_read_lk (const long accum *__p) __asm("eeprom_read_qword") __ATTR_PURE__;
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned long accum</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+unsigned long accum eeprom_read_ulk (const unsigned long accum *__p) __asm("eeprom_read_qword") __ATTR_PURE__;
+
+/** \ingroup avr_stdfix
+    Read a <tt>long long accum</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+long long accum eeprom_read_llk (const long long accum *__p) __asm("eeprom_read_qword") __ATTR_PURE__;
+
+/** \ingroup avr_stdfix
+    Read an <tt>unsigned long long accum</tt> from EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+unsigned long long accum eeprom_read_ullk (const unsigned long long accum *__p) __asm("eeprom_read_qword") __ATTR_PURE__;
+
+
+/** \name EEPROM Write Functions */
+
+/** \ingroup avr_stdfix
+    Write a <tt>short fract</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_hr (short fract *__p, short fract __value) __asm("eeprom_write_byte");
+
+/** \ingroup avr_stdfix
+    Write an <tt>unsigned short fract</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_uhr (unsigned short fract *__p, unsigned short fract __value) __asm("eeprom_write_byte");
+
+/** \ingroup avr_stdfix
+    Write a <tt>fract</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_r (fract *__p, fract __value) __asm("eeprom_write_word");
+
+/** \ingroup avr_stdfix
+    Write an <tt>unsigned fract</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_ur (unsigned fract *__p, unsigned fract __value) __asm("eeprom_write_word");
+
+/** \ingroup avr_stdfix
+    Write a <tt>long fract</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_lr (long fract *__p, long fract __value) __asm("eeprom_write_dword");
+
+/** \ingroup avr_stdfix
+    Write an <tt>unsigned long fract</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_ulr (unsigned long fract *__p, unsigned long fract __value) __asm("eeprom_write_dword");
+
+/** \ingroup avr_stdfix
+    Write a <tt>long long fract</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_llr (long long fract *__p, long long fract __value) __asm("eeprom_write_qword");
+
+/** \ingroup avr_stdfix
+    Write an <tt>unsigned long long fract</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_ullr (unsigned long long fract *__p, unsigned long long fract __value) __asm("eeprom_write_qword");
+
+/** \ingroup avr_stdfix
+    Write a <tt>short accum</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_hk (short accum *__p, short accum __value) __asm("eeprom_write_word");
+
+/** \ingroup avr_stdfix
+    Write an <tt>unsigned short accum</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_uhk (unsigned short accum *__p, unsigned short accum __value) __asm("eeprom_write_word");
+
+/** \ingroup avr_stdfix
+    Write an <tt>accum</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_k (accum *__p, accum __value) __asm("eeprom_write_dword");
+
+/** \ingroup avr_stdfix
+    Write an <tt>unsigned accum</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_uk (unsigned accum *__p, unsigned accum __value) __asm("eeprom_write_dword");
+
+/** \ingroup avr_stdfix
+    Write a <tt>long accum</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_lk (long accum *__p, long accum __value) __asm("eeprom_write_qword");
+
+/** \ingroup avr_stdfix
+    Write an <tt>unsigned long accum</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_ulk (unsigned long accum *__p, unsigned long accum __value) __asm("eeprom_write_qword");
+
+/** \ingroup avr_stdfix
+    Write a <tt>long long accum</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_llk (long long accum *__p, long long accum __value) __asm("eeprom_write_qword");
+
+/** \ingroup avr_stdfix
+    Write an <tt>unsigned long long accum</tt> to EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_write_ullk (unsigned long long accum *__p, unsigned long long accum __value) __asm("eeprom_write_qword");
+
+
+/** \name EEPROM Update Functions */
+
+/** \ingroup avr_stdfix
+    Update a <tt>short fract</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_hr (short fract *__p, short fract __value) __asm("eeprom_update_byte");
+
+/** \ingroup avr_stdfix
+    Update an <tt>unsigned short fract</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_uhr (unsigned short fract *__p, unsigned short fract __value) __asm("eeprom_update_byte");
+
+/** \ingroup avr_stdfix
+    Update a <tt>fract</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_r (fract *__p, fract __value) __asm("eeprom_update_word");
+
+/** \ingroup avr_stdfix
+    Update an <tt>unsigned fract</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_ur (unsigned fract *__p, unsigned fract __value) __asm("eeprom_update_word");
+
+/** \ingroup avr_stdfix
+    Update a <tt>long fract</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_lr (long fract *__p, long fract __value) __asm("eeprom_update_dword");
+
+/** \ingroup avr_stdfix
+    Update an <tt>unsigned long fract</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_ulr (unsigned long fract *__p, unsigned long fract __value) __asm("eeprom_update_dword");
+
+/** \ingroup avr_stdfix
+    Update a <tt>long long fract</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_llr (long long fract *__p, long long fract __value) __asm("eeprom_update_qword");
+
+/** \ingroup avr_stdfix
+    Update an <tt>unsigned long long fract</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_ullr (unsigned long long fract *__p, unsigned long long fract __value) __asm("eeprom_update_qword");
+
+/** \ingroup avr_stdfix
+    Update a <tt>short accum</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_hk (short accum *__p, short accum __value) __asm("eeprom_update_word");
+
+/** \ingroup avr_stdfix
+    Update an <tt>unsigned short accum</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_uhk (unsigned short accum *__p, unsigned short accum __value) __asm("eeprom_update_word");
+
+/** \ingroup avr_stdfix
+    Update an <tt>accum</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_k (accum *__p, accum __value) __asm("eeprom_update_dword");
+
+/** \ingroup avr_stdfix
+    Update an <tt>unsigned accum</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_uk (unsigned accum *__p, unsigned accum __value) __asm("eeprom_update_dword");
+
+/** \ingroup avr_stdfix
+    Update a <tt>long accum</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_lk (long accum *__p, long accum __value) __asm("eeprom_update_qword");
+
+/** \ingroup avr_stdfix
+    Update an <tt>unsigned long accum</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_ulk (unsigned long accum *__p, unsigned long accum __value) __asm("eeprom_update_qword");
+
+/** \ingroup avr_stdfix
+    Update a <tt>long long accum</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_llk (long long accum *__p, long long accum __value) __asm("eeprom_update_qword");
+
+/** \ingroup avr_stdfix
+    Update an <tt>unsigned long long accum</tt> at EEPROM address \a __p.
+    \since AVR-LibC v2.3 */
+void eeprom_update_ullk (unsigned long long accum *__p, unsigned long long accum __value) __asm("eeprom_update_qword");
 
 #ifdef __cplusplus
 }

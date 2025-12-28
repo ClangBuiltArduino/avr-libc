@@ -1,5 +1,5 @@
 /*
- * (C)2012 Michael Duane Rice All rights reserved.
+ * Copyright (C) 2012 Michael Duane Rice All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -28,10 +28,9 @@
 /*
     Local Mean Sidereal Time. See gm_sidereal() for info.
 */
+
 #include <time.h>
-
-extern long __longitude;
-
+#include "time-private.h"
 #include "sectionname.h"
 
 ATTRIBUTE_CLIB_SECTION

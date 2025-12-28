@@ -57,8 +57,17 @@ extern "C" {
     The string functions perform string operations on \c NULL terminated
     strings.
 
-    \note If the strings you are working on resident in program space (flash),
-    you will need to use the string functions described in \ref avr_pgmspace. */
+    \note
+    If the strings you are working on reside in program memory (flash),
+    then you will need to use the string functions provided by one
+    of the following headers:
+    - \ref avr_pgmspace
+    - \ref avr_flash
+    \note
+    When the strings are defined with #PROGMEM or #PROGMEM_FAR,
+    then use the first header.   When they are defined with #__flash
+    or #__flashx, then use the second one.
+*/
 
 
 /** \ingroup avr_string
@@ -366,7 +375,8 @@ extern size_t strcspn(const char *__s, const char *__reject) __ATTR_PURE__;
     The strdup() function allocates memory and copies into it the string
     addressed by \p s1, including the terminating null character.
 
-    \warning The strdup() function calls malloc() to allocate the memory
+    \warning The strdup() function calls \ref a_malloc "malloc()" to allocate
+    the memory
     for the duplicated string! The user is responsible for freeing the
     memory by calling free().
 
@@ -696,4 +706,3 @@ int strcmp(const char *__x, const char *__z)
 #endif
 
 #endif /* _STRING_H_ */
-

@@ -1,5 +1,5 @@
 /*
- * (c)2012 Michael Duane Rice All rights reserved.
+ * Copyright (c) 2012 Michael Duane Rice All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -39,7 +39,7 @@ extern "C" {
 /** \defgroup usa_dst <util/usa_dst.h>: Daylight Saving function for the USA.
     \code #include <util/usa_dst.h> \endcode
     Daylight Saving function for the USA. */
-    
+
 /** \ingroup usa_dst
     \fn int usa_dst (const time_t *timer, int32_t *z)
     To utilize this function, call

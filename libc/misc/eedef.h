@@ -64,11 +64,11 @@
 #  endif
 #  ifndef NVMCTRL_CMD_PAGEERASEWRITE_gc
 #    if NVMCTRL_CMD_gm == 0x7F
-#      if defined (__AVR_Ex__)
+#      if defined (__AVR_Ex__) || defined (__AVR_Lx__)
          /* AVR-Ex family
           * value of NVMCTRL_CMD_enum.NVMCTRL_CMD_EEPERW_gc */
 #        define NVMCTRL_CMD_PAGEERASEWRITE_gc (0x15<<0)
-#      elif defined (__AVR_Dx__) || defined (__AVR_SD__)
+#      elif defined (__AVR_Dx__) || defined (__AVR_Sx__)
          /* AVR-Dx family
           * value of NVMCTRL_CMD_enum.NVMCTRL_CMD_EEERWR_gc */
 #        define NVMCTRL_CMD_PAGEERASEWRITE_gc (0x13<<0)

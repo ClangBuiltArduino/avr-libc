@@ -80,7 +80,7 @@
        https://gcc.gnu.org/PR112944  and also libc/misc/flmap.init.S
        which implements __do_flmap_init.
    [5] Always[6] pulled in by the code below.  Calls main() and then
-       jumps to exit().  With -mon-call-main, the compiler will put
+       jumps to exit().  With -mno-call-main, the compiler will put
        main itself into .init9 any satisfy __call_main.
    [6] When CRT_SELF_CONTAINED if off, the respective parts will be pulled in.
        When CRT_SELF_CONTAINED is on, the code is inserted inline below.
@@ -107,7 +107,7 @@
       achieved by asm code like
           .global <symbol>
           <symbol> = 0
-      or by menas of linking with  -Wl,--defsym,<symbol>=0
+      or by means of linking with  -Wl,--defsym,<symbol>=0
 
       The following parts are affected by CRT_SELF_CONTAINED:
 
@@ -137,10 +137,6 @@
         from the linker when you are running out of RAM or Flash, and
         less precise size reports.
  */
-
-#if (__GNUC__ < 3) || (__GNUC__ == 3 && __GNUC_MINOR__ < 3)
-#error "GCC version >= 3.3 required"
-#endif
 
 #include IOSYMFILE
 
@@ -327,7 +323,26 @@ __vectors:
 	vector	__vector_125
 	vector	__vector_126
 	vector	__vector_127
+#ifdef CPU_OPC_bm  /* Has illegal opcode detection */
+	;; On the AVR-SD devices, instructions must not be followed by an
+	;; illegal opcode.  This is since illegal opcode detection runs at
+	;; instruction fetch of the NEXT instruction, which is being run while
+	;; the 2-stage pipeline is executing the current instruction.
+	;; Any valid opcode will do, so use CLH which disassembles more
+	;; nicely than NOP = 0x0000.
+	clh
+#endif /* Has illegal opcode detection */
 	.endfunc
+
+#ifdef CPU_OPC_bm  /* Has illegal opcode detection */
+	;; For the same reason, put a valid opcode after the last location that
+	;; holds valid code, which is the .hightext section of the default
+	;; linker script.  Notice that .hightext is usually unused.
+	;; We assume Binutils 2.36+ so that we have section flag "R"etain.
+	.pushsection .hightext.zzz, "axR", @progbits
+	clh
+	.popsection
+#endif /* Has illegal opcode detection */
 
 	/* Handle unexpected interrupts (enabled and no handler), which
 	   usually indicate a bug.  Jump to the __vector_default function
@@ -367,6 +382,14 @@ __init:
 	out	SREG_IO_ADDR, __zero_reg__
 
 #ifdef CRT_SELF_CONTAINED
+#if defined(CPU_SPLIM)
+	;; Setting SPLIM is a bit tricky, since we don't know the value
+	;; of __heap_start, and we don't know the current value of SP
+	;; in the case of a soft reset.	 Hence, set SPLIM = 0 first.
+	out _SFR_IO_ADDR(CPU_SPLIML), __zero_reg__
+	out _SFR_IO_ADDR(CPU_SPLIMH), __zero_reg__
+#endif /* Have SPLIM */
+
 	ldi	r28, lo8(__stack)
 #ifdef __AVR_XMEGA__
 	out	SPL_IO_ADDR, r28
@@ -383,6 +406,13 @@ __init:
 	out	SPL_IO_ADDR, r28
 #endif  /* Have SPL */
 #endif  /* __AVR_XMEGA__ */
+
+#if defined(CPU_SPLIM)
+	ldi r24, lo8(__heap_start - 1)
+	ldi r25, hi8(__heap_start - 1)
+	out _SFR_IO_ADDR(CPU_SPLIML), r24
+	out _SFR_IO_ADDR(CPU_SPLIMH), r25
+#endif /* Have SPLIM */
 #else
 	;; Pull in __init_sp from the device lib to .init2
 	.global __init_sp
@@ -400,60 +430,6 @@ __init:
 	out	RAMPZ_IO_ADDR, __zero_reg__
 #endif
 
-#if defined(__GNUC__) && ((__GNUC__ <= 3) || (__GNUC__ == 4 && __GNUC_MINOR__ <= 3))
-#if defined(__AVR_HAVE_ELPM__) || FLASHEND > 0x10000  /* ATmega103 */
-  #define BIG_CODE 1
-#else
-  #define BIG_CODE 0
-#endif
-
-#if BIG_CODE
-	/* Only for >64K devices with RAMPZ, replaces the default code
-	   provided by libgcc.S which is only linked in if necessary.  */
-
-	.section .init4,"ax",@progbits
-	.global __do_copy_data
-__do_copy_data:
-	ldi	r17, hi8(__data_end)
-	ldi	r26, lo8(__data_start)
-	ldi	r27, hi8(__data_start)
-	ldi	r30, lo8(__data_load_start)
-	ldi	r31, hi8(__data_load_start)
-
-	/* On the enhanced core, "elpm" with post-increment updates RAMPZ
-	   automatically.  Otherwise we have to handle it ourselves.  */
-
-#ifdef __AVR_ENHANCED__
-	ldi	r16, hh8(__data_load_start)
-#else
-	ldi	r16, hh8(__data_load_start - 0x10000)
-.L__do_copy_data_carry:
-	inc	r16
-#endif
-	out	RAMPZ_IO_ADDR, r16
-	rjmp	.L__do_copy_data_start
-.L__do_copy_data_loop:
-#ifdef __AVR_ENHANCED__
-	elpm	r0, Z+
-#else
-	elpm
-#endif
-	st	X+, r0
-#ifndef __AVR_ENHANCED__
-	adiw	r30, 1
-	brcs	.L__do_copy_data_carry
-#endif
-.L__do_copy_data_start:
-	cpi	r26, lo8(__data_end)
-	cpc	r27, r17
-	brne	.L__do_copy_data_loop
-#ifdef __AVR_HAVE_RAMPD__
-	out	RAMPZ_IO_ADDR, __zero_reg__
-#endif /* __AVR_HAVE_RAMPD__*/
-
-#endif /* BIG_CODE */
-#endif /* defined(__GNUC__) && ((__GNUC__ <= 3) || (__GNUC__ == 4 && __GNUC_MINOR__ <= 3)) */
-
 	.set	__stack, RAMEND
 #endif /* !__AVR_ASM_ONLY__ */
 
@@ -468,6 +444,20 @@ __do_copy_data:
 #else
 	;; Pull in __call_main from the device lib to .init9
 	.global __call_main
+	;; Issue #1060: Since AVR-LibC v2.3.0 we have the call of main() in
+	;; lib<mcu>.a's __call_main which moved referencing main() from crt<mcu>.o
+	;; to lib<mcu>.a.  This can cause problems with environments which assert
+	;; that main() in referenced by the startup-code and not in a library.
+	;; This is the case for Arduino which defines main() in the core.a lib.
+	;; As the linker sees modules + archives provided something like
+	;;    crt<mcu>.o -lcore --start-group -lgcc -lm -lc -l<mcu> --end-group
+	;; main() is referenced /after/ core.a.  The proper solution to such
+	;; back-and-forth dependencies is to wrap core.a and the libs that are
+	;; referencing it in a group.  What also works for non-LTO builds is to
+	;; reference main() here in crt<mcu>.o.  For LTO builds it is not clear
+	;; what the very problem is, but a fix / work-around is to build the
+	;; main() module with -fno-lto or with -ffat-lto-objects.
+	.global main
 #endif /* CRT self contained */
 
 ;	.endfunc

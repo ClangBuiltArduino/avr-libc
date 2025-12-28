@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 # Copyright (c) 2007, Dmitry Xmelkov
 # All rights reserved.
@@ -309,6 +309,8 @@ Simulate_avrtest ()
     # - 20  Out of memory.
     # - 21  Wrong avrtest usage: Unknown options, etc.
     # - 22  Program file could not be found / read.
+    # - 23  IEEE single emulation failed (e.g. on big-endian host)
+    # - 24  IEEE double emulation failed (e.g. on big-endian host)
     # - 42  Fatal error in avrtest.
 
     # -no-stdin keeps AVRtest from hanging in rare situations of bogus
@@ -355,6 +357,7 @@ Compile ()
     local crt=
     local libs=
     local flags=
+    local devlib="$AVRDIR/avr/devices/$2/lib$2.a"
 
     if [ -z "$AVRDIR" ] ; then
 	  libs="-lm"
@@ -371,9 +374,15 @@ Compile ()
       crt=crt$2.o
       flags="-I../../include -I $AVRDIR/include -nostdlib"
       crt=`find $AVRDIR/avr/devices -name $crt -print | head -1`
-      libs="$AVRDIR/avr/lib/$multilibdir/libc.a	\
+      if [ -z "$crt" ]; then
+	  crt=`find $AVRDIR/avr/devices/$2 -name 'crt*.o' -print | head -1`
+      fi
+      if [ ! -f "$devlib" ]; then
+	  devlib=
+      fi
+      libs="$AVRDIR/avr/lib/$multilibdir/libc.a \
             $AVRDIR/avr/lib/$multilibdir/libm.a \
-            $AVRDIR/avr/devices/$2/lib$2.a -lgcc"
+            $devlib -lgcc"
     fi
 
     case $4 in
@@ -498,8 +507,22 @@ for test_file in $test_list ; do
 			elif [ -z $MAKE_ONLY ] \
 				 && ! Simulate_avrtest $elf_file $mcu
 			then
-			    Err_echo "simulate avrtest failed: $RETVAL"
-			    n_esimul=$(($n_esimul + 1))
+			    case $RETVAL in
+				23)
+				    echo "SKIP (no IEEE single emulation)"
+				    n_skips=$(($n_skips + 1))
+				    break
+				    ;;
+				24)
+				    echo "SKIP (no IEEE double emulation)"
+				    n_skips=$(($n_skips + 1))
+				    break
+				    ;;
+				*)
+				    Err_echo "simulate avrtest failed: $RETVAL"
+				    n_esimul=$(($n_esimul + 1))
+				    ;;
+			    esac
 			else
 			    echo "OK"
 			fi

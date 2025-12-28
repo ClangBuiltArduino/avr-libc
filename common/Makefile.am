@@ -29,6 +29,9 @@
 EXTRA_DIST = \
     alias.h \
     asmdef.h \
+    best_as.h \
     ftoa_engine.h \
     ntz.h \
     sectionname.h
+
+SUBDIRS = f7

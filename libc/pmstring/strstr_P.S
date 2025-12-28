@@ -1,6 +1,6 @@
 /* Copyright (c) 2002, Philip Soeberg
    Copyright (c) 2005, 2006, 2007 Werner Boellmann
-   Copyright (c) 2007  Dmirty Xmelkov
+   Copyright (c) 2007  Dmitry Xmelkov
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -40,8 +40,6 @@
 */
 
 #if !defined(__AVR_TINY__)
-
-#if !defined(__DOXYGEN__)
 
 #include "asmdef.h"
 
@@ -93,7 +91,5 @@ ENTRY _U(strstr_P)
 	ret
 
 ENDFUNC
-
-#endif /* not __DOXYGEN__ */
 
 #endif /* !defined(__AVR_TINY__) */

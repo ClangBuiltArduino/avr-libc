@@ -35,7 +35,7 @@
   POSSIBILITY OF SUCH DAMAGE. */
 
 #ifndef _STDLIB_H_
-#define	_STDLIB_H_ 1
+#define _STDLIB_H_ 1
 
 #ifndef __ASSEMBLER__
 
@@ -48,7 +48,7 @@
 #ifndef __ptr_t
 #define __ptr_t void *
 #endif
-#endif	/* !__DOXYGEN__ */
+#endif /* !__DOXYGEN__ */
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,18 +68,21 @@ extern "C" {
 /** \ingroup avr_stdlib */
 /**@{*/
 /** Result type for function div(). */
-typedef struct {
-	int quot;                   /**< The Quotient. */
-	int rem;                    /**< The Remainder. */
+typedef struct
+{
+    int quot;                   /**< The Quotient. */
+    int rem;                    /**< The Remainder. */
 } div_t;
 
 /** Result type for function ldiv(). */
-typedef struct {
-	long quot;                  /**< The Quotient. */
-	long rem;                   /**< The Remainder. */
+typedef struct
+{
+    long quot;                  /**< The Quotient. */
+    long rem;                   /**< The Remainder. */
 } ldiv_t;
 
-/** Comparision function type for qsort(), just for convenience. */
+/** Comparision function type for qsort() and bsearch(),
+    just for convenience. */
 typedef int (*__compar_fn_t)(const void *, const void *);
 
 #ifndef __DOXYGEN__
@@ -89,35 +92,58 @@ typedef int (*__compar_fn_t)(const void *, const void *);
 #endif
 
 /** The abort() function causes abnormal program termination to occur.
-    This realization disables interrupts and jumps to _exit() function
-    with argument equal to 1. In the limited AVR environment, execution is
-    effectively halted by entering an infinite loop. */
+    This realization disables interrupts and execution is
+    effectively halted by entering an infinite loop. Static destructors
+    and atexit() registered functions are not executed.  */
 extern void abort(void) __ATTR_NORETURN__;
 
-#ifndef __DOXYGEN__
-static __ATTR_ALWAYS_INLINE__
+
+/** The abs() function computes the absolute value of the integer \c i.
+   \note The abs() and labs() functions are builtins of gcc.  */
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
 int abs (int __i)
 {
     return __builtin_abs (__i);
 }
-#endif
-/** The abs() function computes the absolute value of the integer \c i.
-   \note The abs() and labs() functions are builtins of gcc.
-*/
-extern int abs(int __i) __ATTR_CONST__;
 
-#ifndef __DOXYGEN__
-static __ATTR_ALWAYS_INLINE__
-long labs (long __i)
+
+/** The labs() function computes the absolute value of the long integer \c i.
+   \note The abs() and labs() functions are builtins of gcc.  */
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+long labs(long __i)
 {
     return __builtin_labs (__i);
 }
+
+
+/** The llabs() function computes the absolute value of the
+    64-bit integer \c i.
+    \since AVR-LibC v2.3 */
+extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
+long long llabs (long long __i)
+{
+    if (__builtin_constant_p (__i))
+    {
+        return __builtin_llabs (__i);
+    }
+    else
+    {
+        register long long __r18 __asm("18") = __i;
+        __asm (
+#ifdef __AVR_ERRATA_SKIP_JMP_CALL__
+            "tst %r0+7"       "\n\t"
+            "brpl 1f"         "\n\t"
+            "%~call __negdi2" "\n"
+            "1:"
+#else
+            "sbrc %r0+7,7"    "\n\t"
+            "%~call __negdi2"
 #endif
-/** The labs() function computes the absolute value of the long integer
-    \c i.
-   \note The abs() and labs() functions are builtins of gcc.
-*/
-extern long labs(long __i) __ATTR_CONST__;
+            : "+r" (__r18));
+        return __r18;
+    }
+}
+
 
 /**
      The bsearch() function searches an array of \c nmemb objects, the
@@ -137,8 +163,7 @@ extern long labs(long __i) __ATTR_CONST__;
      the array, or a null pointer if no match is found.  If two
      members compare as equal, which member is matched is unspecified.
 */
-extern void *bsearch(const void *__key, const void *__base, size_t __nmemb,
-		     size_t __size, int (*__compar)(const void *, const void *));
+extern void *bsearch(const void *__key, const void *__base, size_t __nmemb, size_t __size, __compar_fn_t __compar);
 
 /* __divmodhi4 and __divmodsi4 from libgcc.a */
 /**
@@ -169,8 +194,7 @@ extern ldiv_t ldiv(long __num, long __denom) __asm__("__divmodsi4") __ATTR_CONST
      to, or greater than zero if the first argument is considered to
      be respectively less than, equal to, or greater than the second.
 */
-extern void qsort(void *__base, size_t __nmemb, size_t __size,
-		  __compar_fn_t __compar);
+extern void qsort(void *__base, size_t __nmemb, size_t __size, __compar_fn_t __compar);
 
 /**
     The strtol() function converts the string in \c nptr to a long
@@ -355,11 +379,13 @@ extern int atoi(const char *__s) __ATTR_PURE__;
 extern void exit(int __status) __ATTR_NORETURN__;
 
 /**
+   \anchor a_malloc
+   \fn void *malloc(size_t size)
    The malloc() function allocates \c size bytes of memory.
    If malloc() fails, a NULL pointer is returned.
 
    Note that malloc() does \e not initialize the returned memory to
-   zero bytes.
+   zero bytes.  For that, see calloc().
 
    See the chapter about \ref malloc "malloc() usage" for implementation
    details.
@@ -367,35 +393,45 @@ extern void exit(int __status) __ATTR_NORETURN__;
 extern void *malloc(size_t __size) __ATTR_MALLOC__;
 
 /**
-   The free() function causes the allocated memory referenced by \c
-   ptr to be made available for future allocations.  If \c ptr is
-   NULL, no action occurs.
+   \anchor a_free
+   The free() function makes the memory referenced by \c ptr
+   available for future allocations.  The memory must have been
+   allocated by a call to \ref a_malloc "malloc()",
+   \ref a_realloc "realloc()", calloc() or other functions like strdup()
+   or fdevopen() that allocate dynamic memory on the heap.
+   If \c ptr is NULL, no action occurs.
 */
 extern void free(void *__ptr);
 
 /**
-   \c malloc() \ref malloc_tunables "tunable".
+   \ref malloc_tunables "tunable" for \ref a_malloc "malloc()".
+   Default value is 32 bytes.
 */
 extern size_t __malloc_margin;
 
 /**
-   \c malloc() \ref malloc_tunables "tunable".
+   \ref malloc_tunables "tunable" for \ref a_malloc "malloc()".
+   Default value is \ref __heap_start "__heap_start".
 */
 extern char *__malloc_heap_start;
 
 /**
-   \c malloc() \ref malloc_tunables "tunable".
+   \ref malloc_tunables "tunable" for \ref a_malloc "malloc()".
+   Default value is __heap_end, which is weakly defined to 0 in
+   the startup code.
 */
 extern char *__malloc_heap_end;
 
 /**
    Allocate \c nele elements of \c size each.  Identical to calling
-   \c malloc() using <tt>nele * size</tt> as argument, except the
-   allocated memory will be cleared to zero.
+   \ref a_malloc "malloc()" using <tt>nele * size</tt> as argument
+   (provided the product doesn't overflow),
+   except the allocated memory will be cleared to zero.
 */
 extern void *calloc(size_t __nele, size_t __size) __ATTR_MALLOC__;
 
 /**
+   \anchor a_realloc
    The realloc() function tries to change the size of the region
    allocated at \c ptr to the new \c size value.  It returns a
    pointer to the new region.  The returned pointer might be the
@@ -407,7 +443,7 @@ extern void *calloc(size_t __nele, size_t __size) __ATTR_MALLOC__;
    the old region, even in case a new region had to be allocated.
 
    It is acceptable to pass \c ptr as NULL, in which case realloc()
-   will behave identical to malloc().
+   will behave identical to \ref a_malloc "malloc()".
 
    If the new memory cannot be allocated, realloc() returns NULL, and
    the region at \c ptr will not be changed.
@@ -418,25 +454,19 @@ extern float strtof(const char *__nptr, char **__endptr);
 
 /** \ingroup avr_stdlib
     The strtod() function is similar to strtof(), except that the conversion
-    result is of type \c double instead of \c float.
-
-    strtod() is currently only supported when \c double is a 32-bit type. */
+    result is of type \c double instead of \c float. */
 extern double strtod(const char *__nptr, char **__endptr);
 
 /** \ingroup avr_stdlib
     The strtold() function is similar to strtof(), except that the conversion
-    result is of type \c long \c double instead of \c float.
-
-    strtold() is currently only supported when \c long \c double is a
-    32-bit type. */
+    result is of type \c long \c double instead of \c float. */
 extern long double strtold(const char *__nptr, char **__endptr);
 
 /**
    \ingroup avr_stdlib
    The atexit() function registers function \a func to be run as part of
    the \c exit() function during \ref sec_dot_fini ".fini8".
-   atexit() calls malloc().
- */
+   atexit() calls \ref a_malloc "malloc()". */
 extern int atexit(void (*func)(void));
 
 /** \ingroup avr_stdlib
@@ -446,7 +476,7 @@ extern int atexit(void (*func)(void));
     to by \a nptr to \c float representation.
 
     It is equivalent to calling
-	\code strtof(nptr, (char**) 0); \endcode */
+    \code strtof(nptr, (char**) 0); \endcode */
 extern float atoff(const char *__nptr);
 
 /** \ingroup avr_stdlib
@@ -456,7 +486,7 @@ extern float atoff(const char *__nptr);
     to by \a nptr to \c double representation.
 
     It is equivalent to calling
-	\code strtod(nptr, (char**) 0); \endcode */
+    \code strtod(nptr, (char**) 0); \endcode */
 extern double atof(const char *__nptr);
 
 /** \ingroup avr_stdlib
@@ -466,7 +496,7 @@ extern double atof(const char *__nptr);
     to by \a nptr to \c long \c double representation.
 
     It is equivalent to calling
-	\code strtold(nptr, (char**) 0); \endcode */
+    \code strtold(nptr, (char**) 0); \endcode */
 extern long double atofl(const char *__nptr);
 
 /**
@@ -482,24 +512,26 @@ extern long double atofl(const char *__nptr);
 #define EXIT_FAILURE 1
 
 /** Highest number that can be generated by rand(). */
-#define	RAND_MAX 0x7FFF
+#define RAND_MAX 0x7FFF
 
 /**
      The rand() function computes a sequence of pseudo-random integers in the
-     range of 0 to \c RAND_MAX (as defined by the header file <stdlib.h>).
+     range of 0 to #RAND_MAX (as defined by the header file <stdlib.h>).
 
      The srand() function sets its argument \c seed as the seed for a new
-     sequence of pseudo-random numbers to be returned by rand().  These
-     sequences are repeatable by calling srand() with the same seed value.
+     sequence of pseudo-random numbers to be returned by rand().
+     These sequences have a period of
+     {{{2<sup>32</sup>-1}}}
+     and are repeatable by calling srand() with the same seed value.
 
      If no seed value is provided, the functions are automatically seeded with
      a value of 1.
 
-     In compliance with the C standard, these functions operate on
-     \c int arguments.  Since the underlying algorithm already uses
-     32-bit calculations, this causes a loss of precision.  See
-     \c random() for an alternate set of functions that retains full
-     32-bit precision.
+     rand() achieves a score of 100% in the \c bbattery_SmallCrush tests from
+     the <a href="https://simul.iro.umontreal.ca/testu01/tu01.html">TestU01</a>
+     suite.
+
+     For the resource consumptions, see the \ref bench_libc "libc benchmarks".
 */
 extern int rand(void);
 /**
@@ -556,15 +588,20 @@ extern char *itoa(int val, char *s, int radix);
 extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
 char *itoa (int __val, char *__s, int __radix)
 {
-    if (!__builtin_constant_p (__radix)) {
-	extern char *__itoa (int, char *, int);
-	return __itoa (__val, __s, __radix);
-    } else if (__radix < 2 || __radix > 36) {
-	*__s = 0;
-	return __s;
-    } else {
-	extern char *__itoa_ncheck (int, char *, unsigned char);
-	return __itoa_ncheck (__val, __s, __radix);
+    if (!__builtin_constant_p (__radix))
+    {
+        extern char *__itoa (int, char *, int);
+        return __itoa (__val, __s, __radix);
+    }
+    else if (__radix < 2 || __radix > 36)
+    {
+        *__s = 0;
+        return __s;
+    }
+    else
+    {
+        extern char *__itoa_ncheck (int, char *, unsigned char);
+        return __itoa_ncheck (__val, __s, __radix);
     }
 }
 #endif
@@ -603,18 +640,18 @@ char *ltoa (long __val, char *__s, int __radix)
 {
     if (!__builtin_constant_p (__radix))
     {
-	extern char *__ltoa (long, char *, int);
-	return __ltoa (__val, __s, __radix);
+        extern char *__ltoa (long, char *, int);
+        return __ltoa (__val, __s, __radix);
     }
     else if (__radix < 2 || __radix > 36)
     {
-	*__s = 0;
-	return __s;
+        *__s = 0;
+        return __s;
     }
     else
     {
-	extern char *__ltoa_ncheck (long, char *, unsigned char);
-	return __ltoa_ncheck (__val, __s, __radix);
+        extern char *__ltoa_ncheck (long, char *, unsigned char);
+        return __ltoa_ncheck (__val, __s, __radix);
     }
 }
 #endif
@@ -658,18 +695,18 @@ char *utoa (unsigned int __val, char *__s, int __radix)
 {
     if (!__builtin_constant_p (__radix))
     {
-	extern char *__utoa (unsigned int, char *, int);
-	return __utoa (__val, __s, __radix);
+        extern char *__utoa (unsigned int, char *, int);
+        return __utoa (__val, __s, __radix);
     }
     else if (__radix < 2 || __radix > 36)
     {
-	*__s = 0;
-	return __s;
+        *__s = 0;
+        return __s;
     }
     else
     {
-	extern char *__utoa_ncheck (unsigned int, char *, unsigned char);
-	return __utoa_ncheck (__val, __s, __radix);
+        extern char *__utoa_ncheck (unsigned int, char *, unsigned char);
+        return __utoa_ncheck (__val, __s, __radix);
     }
 }
 #endif
@@ -703,15 +740,20 @@ extern char *ultoa(unsigned long val, char *s, int radix);
 extern __ATTR_ALWAYS_INLINE__ __ATTR_GNU_INLINE__
 char *ultoa (unsigned long __val, char *__s, int __radix)
 {
-    if (!__builtin_constant_p (__radix)) {
-	extern char *__ultoa (unsigned long, char *, int);
-	return __ultoa (__val, __s, __radix);
-    } else if (__radix < 2 || __radix > 36) {
-	*__s = 0;
-	return __s;
-    } else {
-	extern char *__ultoa_ncheck (unsigned long, char *, unsigned char);
-	return __ultoa_ncheck (__val, __s, __radix);
+    if (!__builtin_constant_p (__radix))
+    {
+        extern char *__ultoa (unsigned long, char *, int);
+        return __ultoa (__val, __s, __radix);
+    }
+    else if (__radix < 2 || __radix > 36)
+    {
+        *__s = 0;
+        return __s;
+    }
+    else
+    {
+        extern char *__ultoa_ncheck (unsigned long, char *, unsigned char);
+        return __ultoa_ncheck (__val, __s, __radix);
     }
 }
 #endif
@@ -725,10 +767,10 @@ char *ultoa (unsigned long __val, char *__s, int __radix)
 
    A very rough estimation of the execution time is
 
-   &nbsp;&nbsp;&nbsp;&nbsp;<i>Cycles</i> &asymp; 950 + 23&middot;<i>N</i> + 8.3&middot;<i>N</i><sup>2</sup>&middot;log(<i>radix</i>) &plusmn; 400
+   {{{<i>Cycles</i> &asymp; 950 + 23*<i>N</i> + 8.3*<i>N</i><sup>2</sup>*log(<i>radix</i>) +/- 400}}}
 
    where <i>N</i> denotes the number of digits in the result,
-   and log stands for the Natural Logarithm.
+   and \e log stands for the Natural Logarithm.
    This means a decimal conversion can take up to 9000 cycles,
    a hexadecimal conversions can take up to 7800 cycles,
    and a binary conversion can take more than 27000 cycles.
@@ -827,19 +869,23 @@ extern char* lltoa(long long, char*, int) __asm("__lltoa");
 
 /**  \ingroup avr_stdlib
 Highest number that can be generated by random(). */
-#define	RANDOM_MAX 0x7FFFFFFF
+#define RANDOM_MAX 0x7FFFFFFF
 
 /**
  \ingroup avr_stdlib
      The random() function computes a sequence of pseudo-random integers in the
-     range of 0 to \c RANDOM_MAX (as defined by the header file <stdlib.h>).
+     range of 0 to #RANDOM_MAX (as defined by the header file <stdlib.h>).
 
      The srandom() function sets its argument \c seed as the seed for a new
-     sequence of pseudo-random numbers to be returned by rand().  These
-     sequences are repeatable by calling srandom() with the same seed value.
+     sequence of pseudo-random numbers to be returned by random().
+     These sequences have a period of
+     {{{2<sup>31</sup>-2}}}
+     and are repeatable by calling srandom() with the same seed value.
 
      If no seed value is provided, the functions are automatically seeded with
      a value of 1.
+
+     For the resource consumptions, see the \ref bench_libc "libc benchmarks".
 */
 extern long random(void);
 /**
@@ -889,6 +935,16 @@ extern unsigned int sqrtu32_floor(unsigned long radic);
 extern unsigned int sqrtu32_floor(unsigned long radic) __asm("__sqrtsi");
 #endif /* Doxygen */
 
+/** \ingroup avr_stdlib
+    \return Returns the square root of the 64-bit value \p radic,
+    rounded down to the next integral value.
+ */
+#ifdef __DOXYGEN__
+extern unsigned long sqrtu64_floor(unsigned long long radic);
+#else
+__extension__ extern unsigned long sqrtu64_floor(unsigned long long radic) __asm("__sqrtdi");
+#endif /* Doxygen */
+
 
 #endif /* __ASSEMBLER */
 /**@}*/
@@ -933,16 +989,14 @@ extern unsigned int sqrtu32_floor(unsigned long radic) __asm("__sqrtsi");
 
    The ftostre() function returns the pointer to the converted string \c s.
 */
-extern char *ftostre(float __val, char *__s, unsigned char __prec,
-                     unsigned char __flags);
+extern char *ftostre(float __val, char *__s, unsigned char __prec, unsigned char __flags);
 /**
    \ingroup avr_stdlib
    The dtostre() function is similar to the ftostre() function, except that
    it converts a \c double value instead of a \c float value.
 
    dtostre() is currently only supported when \c double is a 32-bit type. */
-extern char *dtostre(double __val, char *__s, unsigned char __prec,
-		     unsigned char __flags);
+extern char *dtostre(double __val, char *__s, unsigned char __prec, unsigned char __flags);
 /**
    \ingroup avr_stdlib
    The ldtostre() function is similar to the ftostre() function, except that
@@ -950,8 +1004,7 @@ extern char *dtostre(double __val, char *__s, unsigned char __prec,
 
    ldtostre() is currently only supported when \c long \c double is a
    32-bit type. */
-extern char *ldtostre(long double __val, char *__s, unsigned char __prec,
-		     unsigned char __flags);
+extern char *ldtostre(long double __val, char *__s, unsigned char __prec, unsigned char __flags);
 
 /**
    \ingroup avr_stdlib
@@ -967,16 +1020,14 @@ extern char *ldtostre(long double __val, char *__s, unsigned char __prec,
 
    The ftostrf() function returns the pointer to the converted string \c s.
 */
-extern char *ftostrf(float __val, signed char __width,
-                     unsigned char __prec, char *__s);
+extern char *ftostrf(float __val, signed char __width, unsigned char __prec, char *__s);
 /**
    \ingroup avr_stdlib
    The dtostrf() function is similar to the ftostrf() function, except that
    converts a \c double value instead of a \c float value.
 
    ldtostre() is currently only supported when \c double is a 32-bit type. */
-extern char *dtostrf(double __val, signed char __width,
-                     unsigned char __prec, char *__s);
+extern char *dtostrf(double __val, signed char __width, unsigned char __prec, char *__s);
 /**
    \ingroup avr_stdlib
    The ldtostrf() function is similar to the ftostrf() function, except that
@@ -984,8 +1035,7 @@ extern char *dtostrf(double __val, signed char __width,
 
    ldtostre() is currently only supported when \c long \c double is a
    32-bit type. */
-extern char *ldtostrf(long double __val, signed char __width,
-                      unsigned char __prec, char *__s);
+extern char *ldtostrf(long double __val, signed char __width, unsigned char __prec, char *__s);
 
 /**@}*/
 
@@ -993,7 +1043,7 @@ extern char *ldtostrf(long double __val, signed char __width,
 /* dummy declarations for libstdc++ compatibility */
 extern int system (const char *);
 extern char *getenv (const char *);
-#endif	/* __DOXYGEN__ */
+#endif /* __DOXYGEN__ */
 
 #ifdef __cplusplus
 }

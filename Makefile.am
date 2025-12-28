@@ -27,14 +27,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 EXTRA_DIST = \
+	AUTHORS \
+	INSTALL \
 	LICENSE \
+	NEWS \
 	NEWS.md \
 	bootstrap
 
-DISTCHECK_CONFIGURE_FLAGS=--host=avr
+AM_DISTCHECK_CONFIGURE_FLAGS=--host=avr
 
 SUBDIRS = common include crt1 libc libm avr doc scripts
-DIST_SUBDIRS = common include crt1 libc libm avr doc scripts devtools
-
-dist-hook:
-	cp avr-libc.spec $(distdir)/avr-libc.spec
+DIST_SUBDIRS = common include crt1 libc libm avr doc scripts devtools m4

@@ -473,7 +473,7 @@ block of program memory, see the GCC
    >v14 release notes</a>.
 
 -# The \ref sec_lma "LMA" actually equals the \ref sec_vma "VMA", but is
-unused.  The flash loader like avrdude knows where to put the data,
+unused.  The flash loader like avrdude knows where to put the data.
 
 
 \subsection sec_dot_text The .text Output Section
@@ -597,7 +597,9 @@ empty ones, that are valid in a section name.
     <td><tt>.init2</tt>
     <td>
       Initializes the stack pointer to the value of weak symbol \c __stack,
-      which has a default value of \c RAMEND as defined in <code>avr/io.h</code>
+      which has a default value of \c RAMEND as defined in
+      <code>avr/io.h</code>.  On devices that have it, set \c SPLIM to
+      one less than the value of symbol \ref __heap_start
     <td>AVR-LibC
     <td>\c __init_sp<sup>3</sup>
   </tr>
@@ -621,7 +623,7 @@ empty ones, that are valid in a section name.
   </tr>
   <tr>
     <td><tt>.init3</tt>
-    <td>Paints the RAM from #__heap_start up to RAMEND in
+    <td>Paints the RAM from \ref __heap_start up to RAMEND in
       preparation for _get_ram_unused().
     <td>AVR-LibC
     <td>\c __init_ram_color<sup>v2.3</sup>
@@ -728,10 +730,20 @@ empty ones, that are valid in a section name.
     <td>\c __do_global_dtors
   </tr>
   <tr>
-    <td><tt>.fini5...1</tt>
+    <td><tt>.fini5</tt>
     <td>Unused
     <td>---
-    <td rowspan="2">
+    <td rowspan="4">
+  </tr>
+  <tr>
+    <td><tt>.fini4</tt>
+    <td>Weakly defines <tt>__abort</tt>, used by abort()
+    <td>AVR-LibC
+  </tr>
+  <tr>
+    <td><tt>.fini3...1</tt>
+    <td>Unused
+    <td>---
   </tr>
   <tr>
     <td><tt>.fini0</tt>
@@ -742,7 +754,7 @@ empty ones, that are valid in a section name.
   </table>
   It is unlikely that ordinary code uses the fini sections.
   When there are no static destructors and \c atexit() is not used, then
-  the respective code is not pulled in form the libraries, and the
+  the respective code is not pulled in from the libraries, and the
   fini code just consumes four bytes: a \c CLI and a RJMP to itself.
   Common use cases of fini code is when running the GCC test suite where
   it reduces fallout, and in simulators to determine (un)orderly
@@ -773,6 +785,11 @@ empty ones, that are valid in a section name.
   \endcode
   For data in address-space #__flashx there are support functions
   in \ref avr_flash "<avr/flash.h>".
+
+  The <tt>.progmemx.*</tt> input section pattern was added in Binutils v2.30.
+  In older versions, there was a catch all <tt>.progmem*</tt> pattern
+  for all data in program space, which will cause problems when progmem
+  data pushes the \c \.trampolines out of the lower 128 KiB segment.
 </dd>
 <dt>\anchor sec_dot_jumptables <tt>.jumptables*</tt></dt>
 <dd>
@@ -811,13 +828,14 @@ in the SRAM memory segment. Thus, if you want the <tt>.data</tt> section
 to start at \c 0x1100, pass \c 0x801100 as the address to the linker.
 
 \note
-When using \c malloc() in the application (which could even happen inside
-library calls), \ref malloc_extram "additional adjustments" are required.
+When using \ref a_malloc "malloc()" in the application (which could
+even happen inside library calls),
+\ref malloc_extram "additional adjustments" are required.
 
 \subsection sec_dot_bss  The .bss Output Section
 
 Data in static storage that will be zeroed by the startup code.
-This are data objects without explicit initializer, and data objects
+These are data objects without explicit initializer, and data objects
 with initializers that are all zeroes.
 
 Input sections are <tt>.bss*</tt> and \c COMMON. Common symbols are
@@ -1003,13 +1021,20 @@ The application can read them to infer properties of the binary.
   output to the \c text region, which is the case for emulations
   \c avrxmega2_flmap and \c avrxmega4_flmap.
 </dd>
-<dt><tt>__heap_start</tt></dt>
+<dt>\anchor __heap_start<tt>__heap_start</tt></dt>
 <dd>
   One past the last object located in static storage.  Immediately
   follows the <tt>\ref sec_dot_noinit ".noinit"</tt> section
   (which immediately follows <tt>\ref sec_dot_bss ".bss"</tt>,
   which immediately follows <tt>\ref sec_dot_data ".data"</tt>).
-  Used by \ref malloc "malloc()" and friends.
+  Used by \ref malloc_tunables "malloc() tunables" to determine the
+  start of the heap.
+  On devices that have it, the startup code sets \c SPLIM to the value
+  of <tt>__heap_start-1</tt>.
+</dd>
+<dt><tt>_etext</tt></dt>
+<dd>
+  One byte past the last byte in the \c \.text output section.
 </dd>
 </dl>
 

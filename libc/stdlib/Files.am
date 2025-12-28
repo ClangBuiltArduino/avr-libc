@@ -33,24 +33,29 @@ stdlib_a_c_sources = \
 	bsearch.c \
 	calloc.c \
 	errno.c \
-	dtoa_prf.c \
-	dtostre.c \
-	dtostrf.c \
+	ftoa_prf.c \
+	ftostre.c \
+	ftostrf.c \
 	getenv.c \
 	labs.c \
 	malloc.c \
+	pstr_inf.c \
 	qsort.c \
-	rand.c \
+	seed.c \
+	srand.c \
 	random.c \
 	realloc.c \
-	strtod.c \
+	strtof.c \
+	strtold.c \
 	system.c \
-	dtoa_conv.h \
+	ftoa_conv.h \
 	stdlib_private.h
 
 stdlib_a_asm_sources = \
+	_abort.S \
 	abort.S \
-	atof.S \
+	atoff.S \
+	atofl.S \
 	atoi.S \
 	atol.S \
 	div.S \
@@ -70,6 +75,9 @@ stdlib_a_asm_sources = \
 	isspace.S \
 	isblank.S \
 	ispunct.S \
+	llabs.S \
+	qsort_swapfunc.S \
+	rand.S \
 	strtol.S \
 	strtoll.S \
 	strtoul.S \
@@ -88,10 +96,5 @@ stdlib_a_extra_dist = \
 	strto32.h \
 	strto64.h \
 	strtoxx.h
-
-malloc.o: AVRLIB_CFLAGS += -Wno-maybe-uninitialized
-
-dtoa_prf.o dtostre.o strtod.o: AVRLIB_CFLAGS += -mcall-prologues
-
 
 # vim: set ft=make:

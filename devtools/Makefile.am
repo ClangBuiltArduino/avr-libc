@@ -34,7 +34,10 @@ EXTRA_DIST = \
     Device.am \
     cr_check.py \
     compare-libc.sh \
+    filter-mcus.py.in \
     gen-avr-lib-tree.sh.in \
+    math2dox.in \
     update-news.in \
     mlib-gen.py \
+    mcu-to-avr-name.sh \
     make-binary-dist.sh

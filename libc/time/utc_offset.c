@@ -1,5 +1,5 @@
 /*
- * (c)2012 Michael Duane Rice All rights reserved.
+ * Copyright (c) 2012 Michael Duane Rice All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -28,5 +28,7 @@
 /*
 	UTC offset in seconds East
 */
+
+#include "time-private.h"
 
 long            __utc_offset;

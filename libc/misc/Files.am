@@ -35,16 +35,19 @@ eeprom_asm_sources = \
 	eerd_qword.S \
 	eerd_dword.S \
 	eerd_word.S \
+	eerd_u24.S \
 	eeupd_block.S \
 	eeupd_byte.S \
 	eeupd_qword.S \
 	eeupd_dword.S \
 	eeupd_word.S \
+	eeupd_u24.S \
 	eewr_block.S \
 	eewr_byte.S \
 	eewr_qword.S \
 	eewr_dword.S \
-	eewr_word.S
+	eewr_word.S \
+	eewr_u24.S
 
 dev_c_sources =
 
@@ -65,8 +68,11 @@ misc_a_asm_sources = \
 	itoa_ncheck.S \
 	ltoa.S \
 	ltoa_ncheck.S \
+	madddi10.S \
 	mulsi10.S \
 	mul10.S \
+	sqrtpdi.S \
+	sqrtdi.S \
 	sqrthi.S \
 	sqrtsi.S \
 	ultoa.S \
@@ -79,6 +85,7 @@ misc_a_asm_sources = \
 
 misc_a_extra_dist = \
 	eedef.h \
+	sqrtdef.h \
 	readme_eeprom.txt
 
 # vim: set ft=make:

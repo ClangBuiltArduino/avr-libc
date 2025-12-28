@@ -15,7 +15,7 @@ Notice that the values for relative error and the Worst Case Execution Time
 Cycles<sub>max</sub> are only <em>lower bounds</em>.
 The best achievable accuracy for IEEE single with its 23 fractional bits in
 the mantissa is
-log<sub>10</sub>(2<sup>&ndash;24</sup> &asymp; 6&middot;10<sup>&ndash;8</sup>) &asymp; -7.22.
+{{{log<sub>10</sub>(2<sup>-24</sup> &asymp; 6*10<sup>-8</sup>) &asymp; -7.22}}}.
 
 The poor performance of \c sinf, \c cosf and \c tanf occurs for values
 that are close to the poles (if any) or close to the non-zero zeros.
@@ -46,6 +46,7 @@ that are close to the poles (if any) or close to the non-zero zeros.
   <tr><td> \c #modff <td align='right'> 484 <td> -1e+05 <td> 1e+05 <td align="right"> 365 <td align="right"> 456 <td align="center"> -7.22
   <tr><td> \c #roundf <td align='right'> 236 <td> -1e+05 <td> 1e+05 <td align="right"> 111 <td align="right"> 156 <td align="center"> -7.22
   <tr><td> \c #sinf <td align='right'> 910 <td> 0 <td> 3.15 <td align="right"> 1744 <td align="right"> 2146 <td align="center"> <b>-3.67</b>
+  <tr><td> \c #sincosf <td align='right'> 976 <td> -1.57 <td> 3.15 <td align="right"> 3482 <td align="right"> 3883 <td align="center"> <b>-3.43</b>
   <tr><td> \c #sinhf <td align='right'> 1466 <td> -20 <td> 20 <td align="right"> 3043 <td align="right"> 3461 <td align="center"> -5.78
   <tr><td> \c #sqrtf <td align='right'> 256 <td> 0 <td> 1e+06 <td align="right"> 474 <td align="right"> 510 <td align="center"> -7.22
   <tr><td> \c #tanf <td align='right'> 1178 <td> 0 <td> 3.15 <td align="right"> 2178 <td align="right"> 2946 <td align="center"> <b>-2.86</b>
@@ -77,10 +78,10 @@ that are close to the poles (if any) or close to the non-zero zeros.
   <tr><td> \c #hypotf <td align='right'> 1092 <td> -1e+10 <td> 1e+10 <td> -1e+10 <td> 1e+10 <td align="right"> 850 <td align="right"> 927 <td align="center"> -6.92
   <tr><td> \c #ldexpf <td align='right'> 238 <td> -1e+10 <td> 1e+10 <td> -10 <td> 10 <td align="right"> 40 <td align="right"> 40 <td align="center"> -7.22
   <tr><td> \c #powf <td align='right'> 1858 <td> 0 <td> 1e+04 <td> -10 <td> 10 <td align="right"> 5182 <td align="right"> 5833 <td align="center"> <b>-4.65</b>
-  <tr><td> \c __builtin_powif <td align='right'> 732 <td> 0 <td> 1e+04 <td> -10 <td> 10 <td align="right"> 648 <td align="right"> 1223 <td align="center"> -6.39
+  <tr><td> \c #__builtin_powif <td align='right'> 732 <td> 0 <td> 1e+04 <td> -10 <td> 10 <td align="right"> 648 <td align="right"> 1223 <td align="center"> -6.39
 </table>
 
-For devices wihout MUL instruction the following applies:
+For devices without MUL instruction, the following applies:
 - The execution times for multiplication and for the transcendental functions
   are roughly twice the time for devices that have MUL.
 - The execution times for the remaining functions are roughly the same.
@@ -112,6 +113,7 @@ For devices wihout MUL instruction the following applies:
   <tr><td> \c #modff <td align='right'> 490 <td> -1e+05 <td> 1e+05 <td align="right"> 365 <td align="right"> 456 <td align="center"> -7.22
   <tr><td> \c #roundf <td align='right'> 230 <td> -1e+05 <td> 1e+05 <td align="right"> 109 <td align="right"> 154 <td align="center"> -7.22
   <tr><td> \c #sinf <td align='right'> 912 <td> 0 <td> 3.15 <td align="right"> 3408 <td align="right"> 3818 <td align="center"> <b>-3.67</b>
+  <tr><td> \c #sincosf <td align='right'> 978 <td> -1.57 <td> 3.15 <td align="right"> 6813 <td align="right"> 7225 <td align="center"> <b>-3.43</b>
   <tr><td> \c #sinhf <td align='right'> 1434 <td> -20 <td> 20 <td align="right"> 4941 <td align="right"> 5358 <td align="center"> -5.78
   <tr><td> \c #sqrtf <td align='right'> 252 <td> 0 <td> 1e+06 <td align="right"> 474 <td align="right"> 510 <td align="center"> -7.22
   <tr><td> \c #tanf <td align='right'> 1164 <td> 0 <td> 3.15 <td align="right"> 4080 <td align="right"> 4785 <td align="center"> <b>-2.86</b>
@@ -143,6 +145,6 @@ For devices wihout MUL instruction the following applies:
   <tr><td> \c #hypotf <td align='right'> 1068 <td> -1e+10 <td> 1e+10 <td> -1e+10 <td> 1e+10 <td align="right"> 1297 <td align="right"> 1387 <td align="center"> -6.92
   <tr><td> \c #ldexpf <td align='right'> 232 <td> -1e+10 <td> 1e+10 <td> -10 <td> 10 <td align="right"> 39 <td align="right"> 39 <td align="center"> -7.22
   <tr><td> \c #powf <td align='right'> 1820 <td> 0 <td> 1e+04 <td> -10 <td> 10 <td align="right"> 9490 <td align="right"> 10180 <td align="center"> <b>-4.65</b>
-  <tr><td> \c __builtin_powif <td align='right'> 734 <td> 0 <td> 1e+04 <td> -10 <td> 10 <td align="right"> 1143 <td align="right"> 2140 <td align="center"> -6.39
+  <tr><td> \c #__builtin_powif <td align='right'> 734 <td> 0 <td> 1e+04 <td> -10 <td> 10 <td align="right"> 1143 <td align="right"> 2140 <td align="center"> -6.39
 </table>
 */

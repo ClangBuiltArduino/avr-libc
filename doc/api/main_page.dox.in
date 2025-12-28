@@ -27,6 +27,8 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
+/* @configure_input@ */
+
 /** \mainpage AVR-LibC
 
 \section avr_libc_intro Introduction
@@ -45,22 +47,17 @@ startup code needed by most applications.
 There is a wealth of information in this document which goes beyond simply
 describing the interfaces and routines provided by the library. We hope that
 this document provides enough information to get a new AVR developer up to
-speed quickly using the freely available development tools: binutils, gcc,
+speed quickly using the freely available development tools: Binutils, GCC,
 AVR-LibC and many others.
 
-If you find yourself stuck on a problem which this document doesn't quite
-address, you may wish to post a message to the avr-gcc mailing list. Most of
-the developers of the AVR Binutils and GCC ports in addition to the developers
-of AVR-LibC subscribe to the list, so you will usually be able to get your
-problem resolved. You can subscribe to the list at
-http://lists.nongnu.org/mailman/listinfo/avr-gcc-list . Before posting to the
-list, you might want to try reading the \ref FAQ chapter of this document.
-
-\note If you think you've found a bug, or have a suggestion for an
+If you think you've found a bug, or have a suggestion for an
 improvement, either in this documentation or in the library itself,
 please use the
 <a href="https://github.com/avrdudes/avr-libc/issues">bug tracker</a>
 to ensure the issue won't be forgotten.
+Before reporting a new issue,
+you might want to try reading the \ref FAQ chapter of this document.
+
 
 \section avr_libc_general General Information about this Library
 
@@ -77,18 +74,33 @@ Unless otherwise noted, functions of this library are <em>not</em>
 guaranteed to be reentrant.  In particular, any functions that store
 local state are known to be non-reentrant, as well as functions that
 manipulate I/O registers like the \ref avr_eeprom "EEPROM" access routines.
-If these functions are used within both standard and interrupt contexts
-undefined behaviour will result.
+If these functions are used within both standard and interrupt contexts,
+then undefined behaviour will result.
 See the \ref faq_reentrant "FAQ" for a more detailed discussion.
+
+
+\section supp_compilers Supported Compilers
+\addindex supported compilers
+
+The current AVR-LibC can be used with the most recent AVR GCC back to
+<a href="https://gcc.gnu.org/gcc-4.8">GCC 4.8</a>.
+
+Always use AVR-LibC with the
+\if GIT_BRANCH_IS_ONLINEDOCS
+GCC and Binutils version
+\else
+\ref faq_toolchain_version "GCC and Binutils version"
+\endif
+for which the library has been configured and built.
+
 
 \section supp_devices Supported Devices
 
 \addindex supported devices
 
 The following is a list of AVR devices currently supported by the library.
-Note that actual support for some newer devices depends on the ability
-of the compiler to support these devices at library
-compile-time.
+Note that the actual support for a particular device depends on whether
+it is supported by the compiler at library compile-time.
 
 \latexonly
 { \raggedright
@@ -167,7 +179,7 @@ compile-time.
   ATmega1284,
   ATmega1284P,
   ATmega2560,
-  ATmega2561,
+  ATmega2561
 </dd>
 <dt>megaAVR 0-Series Devices:</dt>
 <dd>
@@ -440,8 +452,11 @@ compile-time.
   AVR16DD28,
   AVR16DD32,
   AVR32DA28,
+  AVR32DA28S,
   AVR32DA32,
+  AVR32DA32S,
   AVR32DA48,
+  AVR32DA48S,
   AVR32DB28,
   AVR32DB32,
   AVR32DB48,
@@ -450,9 +465,13 @@ compile-time.
   AVR32DD28,
   AVR32DD32,
   AVR64DA28,
+  AVR64DA28S,
   AVR64DA32,
+  AVR64DA32S,
   AVR64DA48,
+  AVR64DA48S,
   AVR64DA64,
+  AVR64DA64S,
   AVR64DB28,
   AVR64DB32,
   AVR64DB48,
@@ -462,9 +481,13 @@ compile-time.
   AVR64DD28,
   AVR64DD32,
   AVR128DA28,
+  AVR128DA28S,
   AVR128DA32,
+  AVR128DA32S,
   AVR128DA48,
+  AVR128DA48S,
   AVR128DA64,
+  AVR128DA64S,
   AVR128DB28,
   AVR128DB32,
   AVR128DB48,
@@ -495,9 +518,24 @@ compile-time.
   AVR32EA28,
   AVR32EA32,
   AVR32EA48,
+  AVR32EB14,
+  AVR32EB20,
+  AVR32EB28,
+  AVR32EB32,
   AVR64EA28,
   AVR64EA32,
   AVR64EA48
+</dd>
+<dt>AVR-Lx Devices:</dt>
+<dd>
+  AVR16LA14,
+  AVR16LA20,
+  AVR16LA28,
+  AVR16LA32,
+  AVR32LA14,
+  AVR32LA20,
+  AVR32LA28,
+  AVR32LA32
 </dd>
 <dt>AVR-SD Functional Safety Devices:</dt>
 <dd>
@@ -507,18 +545,18 @@ compile-time.
 </dd>
 <dt>Wireless AVR Devices:</dt>
 <dd>
-  ATmega644RFR2,
   ATmega64RFR2,
+  ATmega644RFR2,
   ATmega128RFA1,
-  ATmega1284RFR2,
   ATmega128RFR2,
+  ATmega1284RFR2,
+  ATmega256RFR2,
   ATmega2564RFR2,
-  ATmega256RFR2
+  AT86RF401
 </dd>
 <dt>Miscellaneous Devices:</dt>
 <dd>
   AT94K \ref supp_dev_footnote_two "[2]",
-  AT86RF401,
   M3000 \ref supp_dev_footnote_four "[4]"
 </dd>
 <dt>Classic AVR Devices:</dt>
@@ -568,9 +606,13 @@ compile-time.
 </dd>
 </dl>
 
+
 \section license AVR-LibC License
 
 AVR-LibC can be freely used and redistributed, provided the following
 license conditions are met.
 
 \verbatim
+@LICENSE_FILE@
+\endverbatim
+*/
