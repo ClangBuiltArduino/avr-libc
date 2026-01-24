@@ -255,7 +255,7 @@ _delay_us(double __us)
 {
 #if (__HAS_DELAY_CYCLES \
      && defined(__OPTIMIZE__) \
-     && !defined(__DELAY_BACKWARD_COMPATIBLE__))
+     && !defined(__DELAY_BACKWARD_COMPATIBLE__) && !defined(__clang__))
     uint32_t __ticks_dc;
     double __tmp = ((F_CPU) / 1e6) * __us;
 
