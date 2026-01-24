@@ -1,25 +1,18 @@
-# Changes since AVR-LibC v2.3.0
+# Changes in AVR-LibC v2.3.1
 
-## General
+This is a quick followup on v2.3.0 with regression fixes.
 
-## ABI and API Changes
+## Regressions fixed
 
-## Improvements and Additions
+- [#1060][1060] adds a reference to `main` in `crt<mcu>.o`.
+  It fixes an `undefined reference to main` error from the linker when
+  `main` is implemented in an archive, like in Arduino.
 
-## Issues closed
-
-- Arduino assumes that main() is referenced from the startup code, which
-  is no more true since calling main() happens in lib<mcu>.a since v.2.3.0.
-  The fix adds a reference to main() in crt<mcu>.o, though there may still be
-  problems in LTO builds.  Building the main() module with -ffat-lto-objects
-  might mitigate the problem, but to date it's unknown whether there is a
-  better approach ([#1060][1060]).
-
-## Pull Requests
-
-## Other Changes
+- A patch introduced a syntax error [#1061][1061] in `util/setbaud.h`.
+  The patch has been reverted.
 
 [1060]: https://github.com/avrdudes/avr-libc/issues/1060
+[1061]: https://github.com/avrdudes/avr-libc/issues/1061
 
 
 # Changes in AVR-LibC v2.3.0
@@ -291,8 +284,6 @@
 - Fixed `strftime`'s return value ([#1040][1040])
   and  `strftime("%r")` ([#1039][1039]).
 
-- Fixed *"Calculations in util/setbaud.h are incorrect"* [#657][657].
-
 - Saturate the value that `_delay_us` / `_delay_ms` are passing down to
   `__builtin_avr_delay_cycles` in order to avoid UB ([#681][681])
   for large values.
@@ -341,7 +332,6 @@
 [643]: https://github.com/avrdudes/avr-libc/issues/643
 [646]: https://github.com/avrdudes/avr-libc/issues/646
 [654]: https://github.com/avrdudes/avr-libc/issues/654
-[657]: https://github.com/avrdudes/avr-libc/issues/657
 [660]: https://github.com/avrdudes/avr-libc/issues/660
 [661]: https://github.com/avrdudes/avr-libc/issues/661
 [663]: https://github.com/avrdudes/avr-libc/issues/663
